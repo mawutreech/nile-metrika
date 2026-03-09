@@ -1,7 +1,30 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
 import { getDatasetBySlug } from "@/lib/queries";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const dataset = await getDatasetBySlug(slug);
+
+  if (!dataset) {
+    return {
+      title: "Dataset not found",
+      description: "This dataset could not be found on Nile Metrika.",
+    };
+  }
+
+  return {
+    title: dataset.title,
+    description:
+      dataset.description || `${dataset.title} dataset on Nile Metrika.`,
+  };
+}
 
 export default async function DatasetPage({
   params,
@@ -25,11 +48,15 @@ export default async function DatasetPage({
         <Container>
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="nm-card p-6">
-              <h2 className="text-xl font-semibold text-slate-900">Dataset overview</h2>
+              <h2 className="text-xl font-semibold text-slate-900">
+                Dataset overview
+              </h2>
               <div className="mt-6 space-y-4 text-sm text-slate-600">
                 <div>
                   <p className="font-medium text-slate-900">Description</p>
-                  <p className="mt-1">{dataset.description || "No description available."}</p>
+                  <p className="mt-1">
+                    {dataset.description || "No description available."}
+                  </p>
                 </div>
                 <div>
                   <p className="font-medium text-slate-900">Theme</p>
@@ -37,7 +64,9 @@ export default async function DatasetPage({
                 </div>
                 <div>
                   <p className="font-medium text-slate-900">Source agency</p>
-                  <p className="mt-1">{dataset.source_agency?.name || "Unknown source"}</p>
+                  <p className="mt-1">
+                    {dataset.source_agency?.name || "Unknown source"}
+                  </p>
                 </div>
               </div>
             </div>

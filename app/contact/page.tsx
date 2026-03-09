@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
 
@@ -34,3 +35,9 @@ export default function ContactPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Contact Nile Metrika for data requests, corrections, feedback, and partnership inquiries.",
+};

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
 import { SectionHeading } from "@/components/common/SectionHeading";
@@ -114,3 +115,9 @@ export default async function DataPage({
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Data",
+  description:
+    "Browse themes, indicators, and datasets across South Sudan's public statistics portal.",
+};

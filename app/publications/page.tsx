@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
@@ -49,3 +50,9 @@ export default async function PublicationsPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Publications",
+  description:
+    "Read reports, bulletins, factsheets, and official statistical publications from Nile Metrika.",
+};

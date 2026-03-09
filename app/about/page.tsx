@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
 
@@ -23,3 +24,9 @@ export default function AboutPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Learn about Nile Metrika and its role as a public statistics portal for South Sudan.",
+};

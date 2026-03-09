@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
 
@@ -23,3 +24,9 @@ export default function MethodologyPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Methodology",
+  description:
+    "Read definitions, classifications, source notes, and methodological guidance for Nile Metrika data.",
+};

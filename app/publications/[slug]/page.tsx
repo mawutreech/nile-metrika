@@ -1,7 +1,30 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/common/PageHero";
 import { Container } from "@/components/common/Container";
 import { getPublicationBySlug } from "@/lib/queries";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const publication = await getPublicationBySlug(slug);
+
+  if (!publication) {
+    return {
+      title: "Publication not found",
+      description: "This publication could not be found on Nile Metrika.",
+    };
+  }
+
+  return {
+    title: publication.title,
+    description:
+      publication.summary || `${publication.title} publication on Nile Metrika.`,
+  };
+}
 
 export default async function PublicationDetailPage({
   params,
@@ -25,11 +48,15 @@ export default async function PublicationDetailPage({
         <Container>
           <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="nm-card p-6">
-              <h2 className="text-xl font-semibold text-slate-900">Publication overview</h2>
+              <h2 className="text-xl font-semibold text-slate-900">
+                Publication overview
+              </h2>
               <div className="mt-6 space-y-4 text-sm text-slate-600">
                 <div>
                   <p className="font-medium text-slate-900">Summary</p>
-                  <p className="mt-1">{publication.summary || "No summary available."}</p>
+                  <p className="mt-1">
+                    {publication.summary || "No summary available."}
+                  </p>
                 </div>
                 <div>
                   <p className="font-medium text-slate-900">Type</p>
