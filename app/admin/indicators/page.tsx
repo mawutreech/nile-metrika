@@ -116,30 +116,36 @@ export default async function AdminIndicatorsPage() {
                   </p>
                 </div>
 
-                <div className="flex gap-2">
-                  <Link
-                    href={`/indicators/${indicator.slug}`}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    href={`/admin/indicators/${indicator.id}/edit`}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                  >
-                    Edit
-                  </Link>
+                <div className="flex flex-wrap gap-2">
+  <Link
+    href={`/indicators/${indicator.slug}`}
+    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+  >
+    View
+  </Link>
+  <Link
+    href={`/admin/indicators/${indicator.id}/values`}
+    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+  >
+    Values
+  </Link>
+  <Link
+    href={`/admin/indicators/${indicator.id}/edit`}
+    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+  >
+    Edit
+  </Link>
 
-                  <form action={deleteIndicator}>
-                    <input type="hidden" name="id" value={indicator.id} />
-                    <button
-                      type="submit"
-                      className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
-                    >
-                      Delete
-                    </button>
-                  </form>
-                </div>
+  <form action={deleteIndicator}>
+    <input type="hidden" name="id" value={indicator.id} />
+    <button
+      type="submit"
+      className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
+    >
+      Delete
+    </button>
+  </form>
+</div>
               </div>
             ))}
           </div>
