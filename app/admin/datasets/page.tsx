@@ -91,57 +91,67 @@ export default async function AdminDatasetsPage() {
           </div>
         ) : datasets && datasets.length > 0 ? (
           <div className="divide-y divide-slate-100">
-            {datasets.map((dataset) => (
-              <div
-                key={dataset.id}
-                className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-start md:justify-between"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    {dataset.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {dataset.theme?.name || "Uncategorized"} •{" "}
-                    {dataset.format || "Unknown"} • Updated{" "}
-                    {dataset.update_date || "N/A"}
-                  </p>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                    {dataset.description || "No description available."}
-                  </p>
-                  <p className="mt-2 text-xs text-slate-400">
-                    /datasets/{dataset.slug}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    Source: {dataset.source_agency?.name || "Unknown"}
-                  </p>
-                </div>
+           {datasets.map((dataset) => {
+  const themeName = Array.isArray(dataset.theme)
+  ? dataset.theme[0]?.name
+  : undefined;
 
-                <div className="flex gap-2">
-                  <Link
-                    href={`/datasets/${dataset.slug}`}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    href={`/admin/datasets/${dataset.id}/edit`}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                  >
-                    Edit
-                  </Link>
+const sourceAgencyName = Array.isArray(dataset.source_agency)
+  ? dataset.source_agency[0]?.name
+  : undefined;
 
-                  <form action={deleteDataset}>
-                    <input type="hidden" name="id" value={dataset.id} />
-                    <button
-                      type="submit"
-                      className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
-                    >
-                      Delete
-                    </button>
-                  </form>
-                </div>
-              </div>
-            ))}
+  return (
+    <div
+      key={dataset.id}
+      className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-start md:justify-between"
+    >
+      <div>
+        <h3 className="text-lg font-semibold text-slate-900">
+          {dataset.title}
+        </h3>
+        <p className="mt-1 text-sm text-slate-500">
+          {themeName || "Uncategorized"} •{" "}
+          {dataset.format || "Unknown"} • Updated{" "}
+          {dataset.update_date || "N/A"}
+        </p>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+          {dataset.description || "No description available."}
+        </p>
+        <p className="mt-2 text-xs text-slate-400">
+          /datasets/{dataset.slug}
+        </p>
+        <p className="mt-1 text-xs text-slate-400">
+          Source: {sourceAgencyName || "Unknown"}
+        </p>
+      </div>
+
+      <div className="flex gap-2">
+        <Link
+          href={`/datasets/${dataset.slug}`}
+          className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+        >
+          View
+        </Link>
+        <Link
+          href={`/admin/datasets/${dataset.id}/edit`}
+          className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+        >
+          Edit
+        </Link>
+
+        <form action={deleteDataset}>
+          <input type="hidden" name="id" value={dataset.id} />
+          <button
+            type="submit"
+            className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
+          >
+            Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+})}
           </div>
         ) : (
           <div className="px-6 py-6 text-sm text-slate-600">

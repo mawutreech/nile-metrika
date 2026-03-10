@@ -90,64 +90,74 @@ export default async function AdminIndicatorsPage() {
           </div>
         ) : indicators && indicators.length > 0 ? (
           <div className="divide-y divide-slate-100">
-            {indicators.map((indicator) => (
-              <div
-                key={indicator.id}
-                className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-start md:justify-between"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    {indicator.name}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {indicator.theme?.name || "Uncategorized"} •{" "}
-                    {indicator.frequency || "Unknown frequency"} •{" "}
-                    {indicator.unit || "No unit"}
-                  </p>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                    {indicator.description || "No description available."}
-                  </p>
-                  <p className="mt-2 text-xs text-slate-400">
-                    /indicators/{indicator.slug}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    Code: {indicator.code || "N/A"} • Source:{" "}
-                    {indicator.source_agency?.name || "Unknown"}
-                  </p>
+            {indicators.map((indicator) => {
+              const themeName = Array.isArray(indicator.theme)
+                ? indicator.theme[0]?.name
+                : undefined;
+
+              const sourceAgencyName = Array.isArray(indicator.source_agency)
+                ? indicator.source_agency[0]?.name
+                : undefined;
+
+              return (
+                <div
+                  key={indicator.id}
+                  className="flex flex-col gap-3 px-6 py-5 md:flex-row md:items-start md:justify-between"
+                >
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      {indicator.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {themeName || "Uncategorized"} •{" "}
+                      {indicator.frequency || "Unknown frequency"} •{" "}
+                      {indicator.unit || "No unit"}
+                    </p>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                      {indicator.description || "No description available."}
+                    </p>
+                    <p className="mt-2 text-xs text-slate-400">
+                      /indicators/{indicator.slug}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Code: {indicator.code || "N/A"} • Source:{" "}
+                      {sourceAgencyName || "Unknown"}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href={`/indicators/${indicator.slug}`}
+                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      href={`/admin/indicators/${indicator.id}/values`}
+                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Values
+                    </Link>
+                    <Link
+                      href={`/admin/indicators/${indicator.id}/edit`}
+                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Edit
+                    </Link>
+
+                    <form action={deleteIndicator}>
+                      <input type="hidden" name="id" value={indicator.id} />
+                      <button
+                        type="submit"
+                        className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </div>
                 </div>
-
-                <div className="flex flex-wrap gap-2">
-  <Link
-    href={`/indicators/${indicator.slug}`}
-    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-  >
-    View
-  </Link>
-  <Link
-    href={`/admin/indicators/${indicator.id}/values`}
-    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-  >
-    Values
-  </Link>
-  <Link
-    href={`/admin/indicators/${indicator.id}/edit`}
-    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-  >
-    Edit
-  </Link>
-
-  <form action={deleteIndicator}>
-    <input type="hidden" name="id" value={indicator.id} />
-    <button
-      type="submit"
-      className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
-    >
-      Delete
-    </button>
-  </form>
-</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="px-6 py-6 text-sm text-slate-600">
