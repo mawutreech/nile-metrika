@@ -4,6 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { ConfirmDeleteButton } from "@/components/admin/ConfirmDeleteButton";
 import { FlashBanner } from "@/components/admin/FlashBanner";
 import { AdminSearchForm } from "@/components/admin/AdminSearchForm";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 
 async function deletePublication(formData: FormData) {
   "use server";
@@ -16,7 +17,10 @@ async function deletePublication(formData: FormData) {
     redirect("/admin/publications?error=missing-id");
   }
 
-  const { error } = await supabase.from("publications").delete().eq("id", id);
+  const { error } = await supabase
+    .from("publications")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     redirect("/admin/publications?error=delete-failed");
@@ -60,20 +64,27 @@ function getErrorMessage(error?: string) {
 export default async function AdminPublicationsPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ success?: string; error?: string; q?: string }>;
+  searchParams?: Promise<{ success?: string; error?: string; q?: string; page?: string }>;
 }) {
   const { profile, supabase } = await requireRole(["admin", "editor", "viewer"]);
   const resolvedSearchParams = searchParams ? await searchParams : {};
+
   const successMessage = getSuccessMessage(resolvedSearchParams?.success);
   const errorMessage = getErrorMessage(resolvedSearchParams?.error);
   const query = (resolvedSearchParams?.q || "").trim();
+  const currentPage = Math.max(Number(resolvedSearchParams?.page || "1"), 1);
+  const pageSize = 10;
+  const from = (currentPage - 1) * pageSize;
+  const to = from + pageSize - 1;
 
   let publicationsQuery = supabase
     .from("publications")
     .select(
-      "id, title, slug, summary, publication_date, type, file_url, created_by, updated_by, created_at, updated_at"
+      "id, title, slug, summary, publication_date, type, file_url, created_by, updated_by, created_at, updated_at",
+      { count: "exact" }
     )
-    .order("publication_date", { ascending: false });
+    .order("publication_date", { ascending: false })
+    .range(from, to);
 
   if (query) {
     publicationsQuery = publicationsQuery.or(
@@ -81,14 +92,17 @@ export default async function AdminPublicationsPage({
     );
   }
 
-  const { data: publications, error } = await publicationsQuery;
+  const { data: publications, error, count } = await publicationsQuery;
+  const totalPages = Math.max(Math.ceil((count || 0) / pageSize), 1);
 
   let profileMap: Record<string, string> = {};
 
   if (publications && publications.length > 0) {
     const ids = Array.from(
       new Set(
-        publications.flatMap((p) => [p.created_by, p.updated_by]).filter(Boolean)
+        publications
+          .flatMap((p) => [p.created_by, p.updated_by])
+          .filter(Boolean)
       )
     );
 
@@ -137,7 +151,7 @@ export default async function AdminPublicationsPage({
       <div className="mt-10 rounded-3xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 px-6 py-4">
           <h2 className="text-lg font-semibold text-slate-900">
-            Publications {query ? `(${publications?.length || 0} results)` : ""}
+            Publications {query ? `(${count || 0} results)` : ""}
           </h2>
         </div>
 
@@ -146,84 +160,95 @@ export default async function AdminPublicationsPage({
             Failed to load publications.
           </div>
         ) : publications && publications.length > 0 ? (
-          <div className="divide-y divide-slate-100">
-            {publications.map((publication) => (
-              <div
-                key={publication.id}
-                className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-start md:justify-between"
-              >
-                <div className="min-w-0">
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    {publication.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {publication.type || "Publication"} •{" "}
-                    {publication.publication_date || "N/A"}
-                  </p>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                    {publication.summary || "No summary available."}
-                  </p>
-                  <p className="mt-2 text-xs text-slate-400">
-                    /publications/{publication.slug}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    File: {publication.file_url ? "Uploaded" : "No file yet"}
-                  </p>
+          <>
+            <div className="divide-y divide-slate-100">
+              {publications.map((publication) => (
+                <div
+                  key={publication.id}
+                  className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-start md:justify-between"
+                >
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      {publication.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {publication.type || "Publication"} •{" "}
+                      {publication.publication_date || "N/A"}
+                    </p>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                      {publication.summary || "No summary available."}
+                    </p>
+                    <p className="mt-2 text-xs text-slate-400">
+                      /publications/{publication.slug}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      File: {publication.file_url ? "Uploaded" : "No file yet"}
+                    </p>
 
-                  <div className="mt-3 grid gap-1 text-xs text-slate-400">
-                    <p>Created at: {publication.created_at || "N/A"}</p>
-                    <p>Updated at: {publication.updated_at || "N/A"}</p>
-                    <p>
-                      Created by:{" "}
-                      {publication.created_by
-                        ? profileMap[publication.created_by] || publication.created_by
-                        : "N/A"}
-                    </p>
-                    <p>
-                      Updated by:{" "}
-                      {publication.updated_by
-                        ? profileMap[publication.updated_by] || publication.updated_by
-                        : "N/A"}
-                    </p>
+                    <div className="mt-3 grid gap-1 text-xs text-slate-400">
+                      <p>Created at: {publication.created_at || "N/A"}</p>
+                      <p>Updated at: {publication.updated_at || "N/A"}</p>
+                      <p>
+                        Created by:{" "}
+                        {publication.created_by
+                          ? profileMap[publication.created_by] || publication.created_by
+                          : "N/A"}
+                      </p>
+                      <p>
+                        Updated by:{" "}
+                        {publication.updated_by
+                          ? profileMap[publication.updated_by] || publication.updated_by
+                          : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href={`/publications/${publication.slug}`}
+                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                    >
+                      View
+                    </Link>
+
+                    {profile.role !== "viewer" ? (
+                      <>
+                        <Link
+                          href={`/admin/publications/${publication.id}/edit`}
+                          className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                        >
+                          Edit
+                        </Link>
+
+                        <Link
+                          href={`/admin/publications/${publication.id}/upload`}
+                          className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+                        >
+                          Upload file
+                        </Link>
+                      </>
+                    ) : null}
+
+                    {profile.role === "admin" ? (
+                      <form action={deletePublication}>
+                        <input type="hidden" name="id" value={publication.id} />
+                        <ConfirmDeleteButton message="Are you sure you want to delete this publication?" />
+                      </form>
+                    ) : null}
                   </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="flex flex-wrap gap-2">
-                  <Link
-                    href={`/publications/${publication.slug}`}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                  >
-                    View
-                  </Link>
-
-                  {profile.role !== "viewer" ? (
-                    <>
-                      <Link
-                        href={`/admin/publications/${publication.id}/edit`}
-                        className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                      >
-                        Edit
-                      </Link>
-
-                      <Link
-                        href={`/admin/publications/${publication.id}/upload`}
-                        className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
-                      >
-                        Upload file
-                      </Link>
-                    </>
-                  ) : null}
-
-                  {profile.role === "admin" ? (
-                    <form action={deletePublication}>
-                      <input type="hidden" name="id" value={publication.id} />
-                      <ConfirmDeleteButton message="Are you sure you want to delete this publication?" />
-                    </form>
-                  ) : null}
-                </div>
-              </div>
-            ))}
-          </div>
+            <div className="px-6 pb-6">
+              <AdminPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                basePath="/admin/publications"
+                query={query}
+              />
+            </div>
+          </>
         ) : (
           <div className="px-6 py-6 text-sm text-slate-600">
             {query ? "No matching publications found." : "No publications yet."}
