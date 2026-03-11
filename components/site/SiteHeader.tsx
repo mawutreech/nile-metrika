@@ -53,6 +53,28 @@ function DataIcon() {
   );
 }
 
+function CensusIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-9 w-9 text-slate-500"
+      aria-hidden="true"
+    >
+      <path d="M3 21h18" />
+      <path d="M5 21V8l7-5 7 5v13" />
+      <path d="M9 21v-6h6v6" />
+      <path d="M8 10h.01" />
+      <path d="M12 10h.01" />
+      <path d="M16 10h.01" />
+    </svg>
+  );
+}
+
 function MethodologyIcon() {
   return (
     <svg
@@ -125,6 +147,27 @@ const menuGroups: MenuGroup[] = [
     items: [{ label: "ALL PUBLICATIONS", href: "/publications" }],
   },
   {
+    label: "CENSUS",
+    sublabel: "states and areas",
+    icon: <CensusIcon />,
+    items: [
+      { label: "CENSUS OVERVIEW", href: "/census" },
+      { label: "CENTRAL EQUATORIA", href: "/census/central-equatoria" },
+      { label: "EASTERN EQUATORIA", href: "/census/eastern-equatoria" },
+      { label: "JONGLEI", href: "/census/jonglei" },
+      { label: "LAKES", href: "/census/lakes" },
+      { label: "NORTHERN BAHR EL GHAZAL", href: "/census/northern-bahr-el-ghazal" },
+      { label: "UNITY", href: "/census/unity" },
+      { label: "UPPER NILE", href: "/census/upper-nile" },
+      { label: "WARRAP", href: "/census/warrap" },
+      { label: "WESTERN BAHR EL GHAZAL", href: "/census/western-bahr-el-ghazal" },
+      { label: "WESTERN EQUATORIA", href: "/census/western-equatoria" },
+      { label: "ABYEI ADMINISTRATIVE AREA", href: "/census/abyei-administrative-area" },
+      { label: "GREATER PIBOR ADMINISTRATIVE AREA", href: "/census/greater-pibor-administrative-area" },
+      { label: "RUWENG ADMINISTRATIVE AREA", href: "/census/ruweng-administrative-area" },
+    ],
+  },
+  {
     label: "METHODOLOGY",
     sublabel: "sources and definitions",
     icon: <MethodologyIcon />,
@@ -167,7 +210,7 @@ function DropdownMenu({
       <div className="absolute left-0 top-full h-4 w-full" />
       <div
         className={[
-          "absolute left-0 top-full z-50 w-full origin-top border-x border-b border-slate-200 bg-white shadow-sm transition-all duration-200 ease-out",
+          "absolute left-0 top-full z-50 max-h-[70vh] w-full overflow-y-auto origin-top border-x border-b border-slate-200 bg-white shadow-sm transition-all duration-200 ease-out",
           open
             ? "translate-y-0 opacity-100"
             : "-translate-y-1 pointer-events-none opacity-0",
@@ -274,7 +317,7 @@ export function SiteHeader() {
       </div>
 
       <div className="hidden border-y border-slate-200 bg-white xl:block">
-        <div className="mx-auto grid max-w-7xl grid-cols-4">
+        <div className="mx-auto grid max-w-7xl grid-cols-5">
           {menuGroups.map((group) => {
             const isOpen = openMenu === group.label;
 
