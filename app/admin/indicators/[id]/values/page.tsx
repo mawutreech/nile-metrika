@@ -74,6 +74,8 @@ function getSuccessMessage(success?: string) {
       return "Indicator value updated successfully.";
     case "deleted":
       return "Indicator value deleted successfully.";
+    case "imported":
+      return "Indicator values imported successfully.";
     default:
       return null;
   }
@@ -89,6 +91,8 @@ function getErrorMessage(error?: string) {
       return "Could not update the indicator value.";
     case "delete-failed":
       return "Could not delete the indicator value.";
+    case "import-failed":
+      return "Could not import the CSV file.";
     default:
       return null;
   }
@@ -156,6 +160,12 @@ export default async function IndicatorValuesPage({
         </div>
 
         <div className="flex gap-3">
+          <Link
+            href={`/admin/indicators/${id}/values/import`}
+            className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          >
+            Import CSV
+          </Link>
           <Link
             href={`/admin/indicators/${id}/edit`}
             className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
