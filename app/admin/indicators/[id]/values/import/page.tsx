@@ -132,7 +132,6 @@ async function importIndicatorValues(indicatorId: string, formData: FormData) {
       };
     });
 
-    // Deduplicate inside the CSV itself: later rows override earlier rows
     const dedupedMap = new Map<
       string,
       {
@@ -144,15 +143,11 @@ async function importIndicatorValues(indicatorId: string, formData: FormData) {
     >();
 
     for (const row of preparedRows) {
-      dedupedMap.set(
-        makeDuplicateKey(row.year, row.geographic_unit_id),
-        row
-      );
+      dedupedMap.set(makeDuplicateKey(row.year, row.geographic_unit_id), row);
     }
 
     const dedupedRows = Array.from(dedupedMap.values());
 
-    // Load existing values for this indicator
     const { data: existingValues, error: existingError } = await supabase
       .from("indicator_values")
       .select("id, year, geographic_unit_id")
@@ -234,11 +229,13 @@ async function importIndicatorValues(indicatorId: string, formData: FormData) {
         redirect(`/admin/indicators/${indicatorId}/values?error=import-failed`);
       }
     }
+
+    redirect(
+      `/admin/indicators/${indicatorId}/values?success=imported&inserted=${rowsToInsert.length}&updated=${rowsToUpdate.length}`
+    );
   } catch {
     redirect(`/admin/indicators/${indicatorId}/values?error=import-failed`);
   }
-
-  redirect(`/admin/indicators/${indicatorId}/values?success=imported`);
 }
 
 export default async function ImportIndicatorValuesPage({

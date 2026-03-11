@@ -66,7 +66,11 @@ async function deleteIndicatorValue(formData: FormData) {
   redirect(`/admin/indicators/${indicatorId}/values?success=deleted`);
 }
 
-function getSuccessMessage(success?: string) {
+function getSuccessMessage(
+  success?: string,
+  inserted?: string,
+  updated?: string
+) {
   switch (success) {
     case "created":
       return "Indicator value created successfully.";
@@ -74,8 +78,11 @@ function getSuccessMessage(success?: string) {
       return "Indicator value updated successfully.";
     case "deleted":
       return "Indicator value deleted successfully.";
-    case "imported":
-      return "Indicator values imported successfully.";
+    case "imported": {
+      const insertedCount = Number(inserted || 0);
+      const updatedCount = Number(updated || 0);
+      return `Import completed: ${insertedCount} inserted, ${updatedCount} updated.`;
+    }
     default:
       return null;
   }
@@ -103,11 +110,21 @@ export default async function IndicatorValuesPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ success?: string; error?: string }>;
+  searchParams?: Promise<{
+    success?: string;
+    error?: string;
+    inserted?: string;
+    updated?: string;
+  }>;
 }) {
   const { id } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : {};
-  const successMessage = getSuccessMessage(resolvedSearchParams?.success);
+
+  const successMessage = getSuccessMessage(
+    resolvedSearchParams?.success,
+    resolvedSearchParams?.inserted,
+    resolvedSearchParams?.updated
+  );
   const errorMessage = getErrorMessage(resolvedSearchParams?.error);
 
   const { supabase } = await requireRole(["admin", "editor"]);
@@ -181,8 +198,12 @@ export default async function IndicatorValuesPage({
         </div>
       </div>
 
-      {successMessage ? <FlashBanner kind="success" message={successMessage} /> : null}
-      {errorMessage ? <FlashBanner kind="error" message={errorMessage} /> : null}
+      {successMessage ? (
+        <FlashBanner kind="success" message={successMessage} />
+      ) : null}
+      {errorMessage ? (
+        <FlashBanner kind="error" message={errorMessage} />
+      ) : null}
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -321,7 +342,11 @@ export default async function IndicatorValuesPage({
 
                             <form action={deleteIndicatorValue}>
                               <input type="hidden" name="id" value={row.id} />
-                              <input type="hidden" name="indicator_id" value={id} />
+                              <input
+                                type="hidden"
+                                name="indicator_id"
+                                value={id}
+                              />
                               <ConfirmDeleteButton message="Are you sure you want to delete this value?" />
                             </form>
                           </div>
