@@ -4,9 +4,44 @@ import "./globals.css";
 import { SiteHeader } from "@/components/site/SiteHeader";
 
 export const metadata: Metadata = {
-  title: "Nile Metrika",
+  metadataBase: new URL("https://example.com"),
+  title: {
+    default: "Nile Metrika",
+    template: "%s | Nile Metrika",
+  },
   description:
     "South Sudan public portal for accessible, trusted, and structured statistical information.",
+  applicationName: "Nile Metrika",
+  keywords: [
+    "Nile Metrika",
+    "South Sudan",
+    "data portal",
+    "statistics",
+    "datasets",
+    "indicators",
+    "publications",
+  ],
+  authors: [{ name: "Nile Metrika" }],
+  creator: "Nile Metrika",
+  publisher: "Nile Metrika",
+  openGraph: {
+    title: "Nile Metrika",
+    description:
+      "South Sudan public portal for accessible, trusted, and structured statistical information.",
+    siteName: "Nile Metrika",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nile Metrika",
+    description:
+      "South Sudan public portal for accessible, trusted, and structured statistical information.",
+  },
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
