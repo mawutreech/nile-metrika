@@ -25,7 +25,7 @@ function PublicationsIcon() {
       strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-10 w-10 text-slate-500"
+      className="h-9 w-9 text-slate-500"
       aria-hidden="true"
     >
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -43,7 +43,7 @@ function DataIcon() {
       strokeWidth="1.7"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-10 w-10 text-emerald-600"
+      className="h-9 w-9 text-emerald-600"
       aria-hidden="true"
     >
       <ellipse cx="12" cy="5" rx="7" ry="3" />
@@ -62,7 +62,7 @@ function MethodologyIcon() {
       strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-10 w-10 text-slate-500"
+      className="h-9 w-9 text-slate-500"
       aria-hidden="true"
     >
       <rect x="3" y="4" width="18" height="16" rx="2" />
@@ -81,7 +81,7 @@ function AboutIcon() {
     <svg
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="h-9 w-9 text-slate-500"
+      className="h-8 w-8 text-slate-500"
       aria-hidden="true"
     >
       <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H14a2.5 2.5 0 0 1 2.5 2.5V11A2.5 2.5 0 0 1 14 13.5H9l-4 3V5.5Z" />
@@ -167,7 +167,7 @@ function DropdownMenu({
       <div className="absolute left-0 top-full h-4 w-full" />
       <div
         className={[
-          "absolute left-0 top-full z-50 w-full origin-top border-x border-b border-slate-300 bg-white shadow-sm transition-all duration-200 ease-out",
+          "absolute left-0 top-full z-50 w-full origin-top border-x border-b border-slate-200 bg-white shadow-sm transition-all duration-200 ease-out",
           open
             ? "translate-y-0 opacity-100"
             : "-translate-y-1 pointer-events-none opacity-0",
@@ -177,7 +177,7 @@ function DropdownMenu({
           <Link
             key={item.href}
             href={item.href}
-            className="block border-t border-slate-200 px-5 py-4 text-center text-[13px] font-medium tracking-[0.08em] text-slate-700 transition hover:bg-slate-50"
+            className="block border-t border-slate-100 px-5 py-3.5 text-center text-[12px] font-medium tracking-[0.08em] text-slate-700 transition hover:bg-slate-50"
           >
             {item.label}
           </Link>
@@ -283,13 +283,13 @@ export function SiteHeader() {
                 <Link
                   key={group.label}
                   href={group.href}
-                  className="flex min-h-[144px] flex-col items-center justify-center border-r border-slate-200 px-6 py-6 text-center transition last:border-r-0 hover:bg-slate-50"
+                  className="flex min-h-[124px] flex-col items-center justify-center border-r border-slate-200 px-5 py-5 text-center transition last:border-r-0 hover:bg-slate-50"
                 >
-                  <div className="mb-3">{group.icon}</div>
-                  <p className="text-[15px] font-medium tracking-[0.06em] text-slate-800">
+                  <div className="mb-2.5">{group.icon}</div>
+                  <p className="text-[14px] font-medium tracking-[0.06em] text-slate-800">
                     {group.label}
                   </p>
-                  <p className="mt-1 text-[13px] text-slate-600">
+                  <p className="mt-1 text-[12px] text-slate-600">
                     {group.sublabel}
                   </p>
                 </Link>
@@ -311,15 +311,15 @@ export function SiteHeader() {
                     )
                   }
                   className={[
-                    "flex min-h-[144px] w-full flex-col items-center justify-center px-6 py-6 text-center transition",
+                    "flex min-h-[124px] w-full flex-col items-center justify-center px-5 py-5 text-center transition",
                     isOpen ? "bg-slate-50" : "hover:bg-slate-50",
                   ].join(" ")}
                 >
-                  <div className="mb-3">{group.icon}</div>
-                  <p className="text-[15px] font-medium tracking-[0.06em] text-slate-800">
+                  <div className="mb-2.5">{group.icon}</div>
+                  <p className="text-[14px] font-medium tracking-[0.06em] text-slate-800">
                     {group.label}
                   </p>
-                  <p className="mt-1 text-[13px] text-slate-600">
+                  <p className="mt-1 text-[12px] text-slate-600">
                     {group.sublabel}
                   </p>
                 </button>
