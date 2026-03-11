@@ -49,7 +49,7 @@ async function updateIndicatorValue(
     throw new Error("Update failed. No value row was updated.");
   }
 
-  redirect(`/admin/indicators/${indicatorId}/values`);
+  redirect(`/admin/indicators/${indicatorId}/values?success=updated`);
 }
 
 export default async function EditIndicatorValuePage({

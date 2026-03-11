@@ -36,7 +36,7 @@ async function createIndicator(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect("/admin/indicators");
+  redirect("/admin/indicators?success=created");
 }
 
 export default async function NewIndicatorPage() {

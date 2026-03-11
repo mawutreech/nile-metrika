@@ -47,7 +47,7 @@ async function uploadPublicationFile(id: string, formData: FormData) {
     throw new Error(updateError.message);
   }
 
-  redirect("/admin/publications");
+  redirect("/admin/publications?success=uploaded");
 }
 
 export default async function UploadPublicationPage({

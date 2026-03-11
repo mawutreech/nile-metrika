@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
+import { ConfirmDeleteButton } from "@/components/admin/ConfirmDeleteButton";
 
 async function createIndicatorValue(indicatorId: string, formData: FormData) {
   "use server";
@@ -37,7 +38,7 @@ async function createIndicatorValue(indicatorId: string, formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect(`/admin/indicators/${indicatorId}/values`);
+  redirect(`/admin/indicators/${indicatorId}/values?success=created`);
 }
 
 async function deleteIndicatorValue(formData: FormData) {
@@ -61,15 +62,32 @@ async function deleteIndicatorValue(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect(`/admin/indicators/${indicatorId}/values`);
+  redirect(`/admin/indicators/${indicatorId}/values?success=deleted`);
+}
+
+function getSuccessMessage(success?: string) {
+  switch (success) {
+    case "created":
+      return "Indicator value created successfully.";
+    case "updated":
+      return "Indicator value updated successfully.";
+    case "deleted":
+      return "Indicator value deleted successfully.";
+    default:
+      return null;
+  }
 }
 
 export default async function IndicatorValuesPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ success?: string }>;
 }) {
   const { id } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const successMessage = getSuccessMessage(resolvedSearchParams?.success);
 
   const { supabase } = await requireRole(["admin", "editor"]);
 
@@ -135,6 +153,12 @@ export default async function IndicatorValuesPage({
           </Link>
         </div>
       </div>
+
+      {successMessage ? (
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          {successMessage}
+        </div>
+      ) : null}
 
       <div className="mt-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
@@ -225,11 +249,21 @@ export default async function IndicatorValuesPage({
               <table className="min-w-full divide-y divide-slate-200 text-sm">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="px-6 py-3 text-left font-medium text-slate-600">Year</th>
-                    <th className="px-6 py-3 text-left font-medium text-slate-600">Value</th>
-                    <th className="px-6 py-3 text-left font-medium text-slate-600">Date</th>
-                    <th className="px-6 py-3 text-left font-medium text-slate-600">Geography</th>
-                    <th className="px-6 py-3 text-left font-medium text-slate-600">Action</th>
+                    <th className="px-6 py-3 text-left font-medium text-slate-600">
+                      Year
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-slate-600">
+                      Value
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-slate-600">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-slate-600">
+                      Geography
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium text-slate-600">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 bg-white">
@@ -240,11 +274,15 @@ export default async function IndicatorValuesPage({
 
                     return (
                       <tr key={row.id}>
-                        <td className="px-6 py-4 text-slate-700">{row.year ?? "N/A"}</td>
+                        <td className="px-6 py-4 text-slate-700">
+                          {row.year ?? "N/A"}
+                        </td>
                         <td className="px-6 py-4 text-slate-700">
                           {row.value} {indicator.unit || ""}
                         </td>
-                        <td className="px-6 py-4 text-slate-700">{row.date || "N/A"}</td>
+                        <td className="px-6 py-4 text-slate-700">
+                          {row.date || "N/A"}
+                        </td>
                         <td className="px-6 py-4 text-slate-700">
                           {geographyName || "N/A"}
                         </td>
@@ -259,13 +297,12 @@ export default async function IndicatorValuesPage({
 
                             <form action={deleteIndicatorValue}>
                               <input type="hidden" name="id" value={row.id} />
-                              <input type="hidden" name="indicator_id" value={id} />
-                              <button
-                                type="submit"
-                                className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
-                              >
-                                Delete
-                              </button>
+                              <input
+                                type="hidden"
+                                name="indicator_id"
+                                value={id}
+                              />
+                              <ConfirmDeleteButton message="Are you sure you want to delete this value?" />
                             </form>
                           </div>
                         </td>

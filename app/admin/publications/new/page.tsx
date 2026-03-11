@@ -32,7 +32,7 @@ async function createPublication(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect("/admin/publications");
+  redirect("/admin/publications?success=created");
 }
 
 export default async function NewPublicationPage() {

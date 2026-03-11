@@ -46,7 +46,7 @@ async function updateDataset(id: string, formData: FormData) {
     throw new Error("Update failed. No dataset row was updated.");
   }
 
-  redirect("/admin/datasets");
+  redirect("/admin/datasets?success=updated");
 }
 
 export default async function EditDatasetPage({

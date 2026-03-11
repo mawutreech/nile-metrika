@@ -38,7 +38,7 @@ async function createDataset(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect("/admin/datasets");
+  redirect("/admin/datasets?success=created");
 }
 
 export default async function NewDatasetPage() {
@@ -95,7 +95,6 @@ export default async function NewDatasetPage() {
           <textarea
             name="description"
             className="min-h-32 w-full rounded-xl border border-slate-300 px-4 py-3"
-            placeholder="Monthly consumer price series for national and selected urban areas."
           />
         </div>
 

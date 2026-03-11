@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
+import { ConfirmDeleteButton } from "@/components/admin/ConfirmDeleteButton";
 
 async function deleteIndicator(formData: FormData) {
   "use server";
@@ -22,11 +23,30 @@ async function deleteIndicator(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect("/admin/indicators");
+  redirect("/admin/indicators?success=deleted");
 }
 
-export default async function AdminIndicatorsPage() {
+function getSuccessMessage(success?: string) {
+  switch (success) {
+    case "created":
+      return "Indicator created successfully.";
+    case "updated":
+      return "Indicator updated successfully.";
+    case "deleted":
+      return "Indicator deleted successfully.";
+    default:
+      return null;
+  }
+}
+
+export default async function AdminIndicatorsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ success?: string }>;
+}) {
   const { profile, supabase } = await requireRole(["admin", "editor", "viewer"]);
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const successMessage = getSuccessMessage(resolvedSearchParams?.success);
 
   const { data: indicators, error } = await supabase
     .from("indicators")
@@ -46,6 +66,29 @@ export default async function AdminIndicatorsPage() {
       source_agency:source_agencies(name)
     `)
     .order("name", { ascending: true });
+
+  let profileMap: Record<string, string> = {};
+
+  if (indicators && indicators.length > 0) {
+    const ids = Array.from(
+      new Set(
+        indicators
+          .flatMap((i) => [i.created_by, i.updated_by])
+          .filter(Boolean)
+      )
+    );
+
+    if (ids.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, email")
+        .in("id", ids);
+
+      profileMap = Object.fromEntries(
+        (profiles || []).map((p) => [p.id, p.email || p.id])
+      );
+    }
+  }
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
@@ -68,6 +111,12 @@ export default async function AdminIndicatorsPage() {
           </Link>
         ) : null}
       </div>
+
+      {successMessage ? (
+        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          {successMessage}
+        </div>
+      ) : null}
 
       <div className="mt-10 rounded-3xl border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 px-6 py-4">
@@ -117,8 +166,18 @@ export default async function AdminIndicatorsPage() {
                     <div className="mt-3 grid gap-1 text-xs text-slate-400">
                       <p>Created at: {indicator.created_at || "N/A"}</p>
                       <p>Updated at: {indicator.updated_at || "N/A"}</p>
-                      <p>Created by: {indicator.created_by || "N/A"}</p>
-                      <p>Updated by: {indicator.updated_by || "N/A"}</p>
+                      <p>
+                        Created by:{" "}
+                        {indicator.created_by
+                          ? profileMap[indicator.created_by] || indicator.created_by
+                          : "N/A"}
+                      </p>
+                      <p>
+                        Updated by:{" "}
+                        {indicator.updated_by
+                          ? profileMap[indicator.updated_by] || indicator.updated_by
+                          : "N/A"}
+                      </p>
                     </div>
                   </div>
 
@@ -150,12 +209,7 @@ export default async function AdminIndicatorsPage() {
                     {profile.role === "admin" ? (
                       <form action={deleteIndicator}>
                         <input type="hidden" name="id" value={indicator.id} />
-                        <button
-                          type="submit"
-                          className="rounded-xl border border-rose-200 px-3 py-2 text-sm text-rose-700 transition hover:bg-rose-50"
-                        >
-                          Delete
-                        </button>
+                        <ConfirmDeleteButton message="Are you sure you want to delete this indicator?" />
                       </form>
                     ) : null}
                   </div>

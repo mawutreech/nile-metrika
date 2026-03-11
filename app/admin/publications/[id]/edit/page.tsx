@@ -40,7 +40,7 @@ async function updatePublication(id: string, formData: FormData) {
     throw new Error("Update failed. No publication row was updated.");
   }
 
-  redirect("/admin/publications");
+  redirect("/admin/publications?success=updated");
 }
 
 export default async function EditPublicationPage({

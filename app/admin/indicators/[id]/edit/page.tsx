@@ -44,7 +44,7 @@ async function updateIndicator(id: string, formData: FormData) {
     throw new Error("Update failed. No indicator row was updated.");
   }
 
-  redirect("/admin/indicators");
+  redirect("/admin/indicators?success=updated");
 }
 
 export default async function EditIndicatorPage({

@@ -47,7 +47,7 @@ async function uploadDatasetFile(id: string, formData: FormData) {
     throw new Error(updateError.message);
   }
 
-  redirect("/admin/datasets");
+  redirect("/admin/datasets?success=uploaded");
 }
 
 export default async function UploadDatasetPage({
