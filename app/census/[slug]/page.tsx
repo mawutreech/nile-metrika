@@ -64,26 +64,71 @@ export default async function CensusUnitPage({
     .order("sort_order", { ascending: true })
     .order("name", { ascending: true });
 
-  const childIds = (children || []).map((child) => child.id);
+  const childRows = children || [];
+  const childIds = childRows.map((child) => child.id);
 
   let populationMap = new Map<string, number>();
 
-  if (childIds.length > 0) {
-    const { data: populations } = await supabase
-      .from("census_population")
-      .select("geographic_unit_id, population")
-      .in("geographic_unit_id", childIds);
+  if (unit.type === "county") {
+    // county page -> children are payams -> direct population lookup
+    if (childIds.length > 0) {
+      const { data: populations } = await supabase
+        .from("census_population")
+        .select("geographic_unit_id, population")
+        .in("geographic_unit_id", childIds);
 
-    populationMap = new Map(
-      (populations || [])
-        .filter(
-          (row) =>
-            row.geographic_unit_id &&
-            row.population !== null &&
-            row.population !== undefined
-        )
-        .map((row) => [row.geographic_unit_id, Number(row.population)])
-    );
+      populationMap = new Map(
+        (populations || []).map((row) => [
+          row.geographic_unit_id,
+          Number(row.population || 0),
+        ])
+      );
+    }
+  } else if (unit.type === "state" || unit.type === "administrative_area") {
+    // state/administrative_area page -> children are counties
+    // aggregate county totals from their payams' populations
+    if (childIds.length > 0) {
+      const { data: payams } = await supabase
+        .from("geographic_units")
+        .select("id, parent_id")
+        .eq("type", "payam")
+        .in("parent_id", childIds);
+
+      const payamRows = payams || [];
+      const payamIds = payamRows.map((row) => row.id);
+
+      const payamsByCounty = new Map<string, string[]>();
+      for (const payam of payamRows) {
+        if (!payam.parent_id) continue;
+        const existing = payamsByCounty.get(payam.parent_id) || [];
+        existing.push(payam.id);
+        payamsByCounty.set(payam.parent_id, existing);
+      }
+
+      let populationByPayam = new Map<string, number>();
+      if (payamIds.length > 0) {
+        const { data: populations } = await supabase
+          .from("census_population")
+          .select("geographic_unit_id, population")
+          .in("geographic_unit_id", payamIds);
+
+        populationByPayam = new Map(
+          (populations || []).map((row) => [
+            row.geographic_unit_id,
+            Number(row.population || 0),
+          ])
+        );
+      }
+
+      for (const countyId of childIds) {
+        const countyPayamIds = payamsByCounty.get(countyId) || [];
+        const total = countyPayamIds.reduce((sum, payamId) => {
+          return sum + (populationByPayam.get(payamId) || 0);
+        }, 0);
+
+        populationMap.set(countyId, total);
+      }
+    }
   }
 
   const description =
@@ -91,7 +136,9 @@ export default async function CensusUnitPage({
       ? "Browse payams under this county and view population where available."
       : unit.type === "payam"
         ? "Browse bomas under this payam and view population where available."
-        : `Browse the hierarchy under this ${unitTypeLabel(unit.type).toLowerCase()}.`;
+        : unit.type === "state" || unit.type === "administrative_area"
+          ? "Browse counties under this area and view aggregated population totals."
+          : `Browse the hierarchy under this ${unitTypeLabel(unit.type).toLowerCase()}.`;
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16">
@@ -121,10 +168,13 @@ export default async function CensusUnitPage({
           <div className="px-6 py-6 text-sm text-rose-600">
             Failed to load child units.
           </div>
-        ) : children && children.length > 0 ? (
+        ) : childRows.length > 0 ? (
           <div className="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-3">
-            {children.map((child) => {
-              const population = populationMap.get(child.id) ?? null;
+            {childRows.map((child) => {
+              const population = populationMap.has(child.id)
+                ? populationMap.get(child.id) ?? null
+                : null;
+
               const formattedPopulation = formatPopulation(population);
 
               return (
