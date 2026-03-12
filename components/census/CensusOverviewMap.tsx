@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
+import { GeoJSON, MapContainer } from "react-leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 type CountyPopulationRow = {
@@ -33,16 +34,16 @@ function normalizeName(value: string) {
 }
 
 const COUNTY_NAME_ALIASES: Record<string, string> = {
-  "bor": "bor south",
+  bor: "bor south",
   "bor south": "bor south",
 
-  "lafon": "lopa",
-  "lopa": "lopa",
+  lafon: "lopa",
+  lopa: "lopa",
 
-  "raga": "raja",
-  "raja": "raja",
+  raga: "raja",
+  raja: "raja",
 
-  "yei": "yei river",
+  yei: "yei river",
   "yei river": "yei river",
 
   "canal / pigi": "canal/pigi",
@@ -75,7 +76,6 @@ function getFillColor(value: number | null, max: number) {
 }
 
 const LeafletMapContainer = MapContainer as unknown as React.ComponentType<any>;
-const LeafletTileLayer = TileLayer as unknown as React.ComponentType<any>;
 const LeafletGeoJSON = GeoJSON as unknown as React.ComponentType<any>;
 
 export function CensusOverviewMap({
@@ -94,10 +94,7 @@ export function CensusOverviewMap({
 
   const countyMap = useMemo(() => {
     return new Map(
-      counties.map((county) => [
-        getCanonicalCountyName(county.name),
-        county,
-      ])
+      counties.map((county) => [getCanonicalCountyName(county.name), county])
     );
   }, [counties]);
 
@@ -110,7 +107,13 @@ export function CensusOverviewMap({
     );
   }, [counties]);
 
-  if (!geojson) {
+  const mapBounds = useMemo(() => {
+    if (!geojson) return null;
+    const layer = L.geoJSON(geojson as any);
+    return layer.getBounds();
+  }, [geojson]);
+
+  if (!geojson || !mapBounds) {
     return (
       <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
         County map could not be loaded. Check that the file exists at{" "}
@@ -127,18 +130,15 @@ export function CensusOverviewMap({
         </h2>
       </div>
 
-      <div className="h-[560px] w-full">
+      <div className="h-[720px] w-full bg-white">
         <LeafletMapContainer
-          center={[7.5, 30.0]}
-          zoom={6}
+          bounds={mapBounds}
+          boundsOptions={{ padding: [8, 8] }}
           scrollWheelZoom={true}
+          zoomControl={true}
           className="h-full w-full"
+          style={{ background: "#ffffff" }}
         >
-          <LeafletTileLayer
-            attribution="&copy; OpenStreetMap contributors"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
           <LeafletGeoJSON
             data={geojson}
             style={(feature: GeoJsonFeature) => {
@@ -151,9 +151,9 @@ export function CensusOverviewMap({
 
               return {
                 color: "#475569",
-                weight: 1,
+                weight: 1.2,
                 fillColor: getFillColor(population, maxPopulation),
-                fillOpacity: 0.8,
+                fillOpacity: 0.85,
               };
             }}
             onEachFeature={(feature: GeoJsonFeature, layer: any) => {
@@ -174,14 +174,23 @@ export function CensusOverviewMap({
 
               layer.bindTooltip(
                 `
-                  <div style="min-width: 160px">
+                  <div style="min-width: 170px">
                     <strong>${name}</strong><br/>
                     ${parent}<br/>
                     Population: ${formatPopulation(population)}
                   </div>
                 `,
-                { sticky: true }
+                {
+                  sticky: true,
+                }
               );
+
+              layer.bindTooltip(name, {
+                permanent: true,
+                direction: "center",
+                className: "county-name-label",
+                opacity: 0.9,
+              });
             }}
           />
         </LeafletMapContainer>
