@@ -134,8 +134,14 @@ export function CensusOverviewMap({
         <LeafletMapContainer
           bounds={mapBounds}
           boundsOptions={{ padding: [8, 8] }}
-          scrollWheelZoom={true}
-          zoomControl={true}
+          dragging={false}
+          scrollWheelZoom={false}
+          doubleClickZoom={false}
+          boxZoom={false}
+          keyboard={false}
+          touchZoom={false}
+          zoomControl={false}
+          attributionControl={false}
           className="h-full w-full"
           style={{ background: "#ffffff" }}
         >
