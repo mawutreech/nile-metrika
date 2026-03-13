@@ -138,7 +138,7 @@ export function SectionLanding({
               Related portal sections
             </p>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-              Move across themes, geography, and evidence sources through connected sections of Nile Metrika.
+              Move across themes, geography, and evidence sources through connected sections of Nile Metrica.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               {relatedLinks.map((link) => (

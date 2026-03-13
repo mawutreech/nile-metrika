@@ -8,7 +8,7 @@ export function SectionHeading({
   return (
     <div className="mb-10 max-w-3xl">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-700">
-        Nile Metrika
+        Nile Metrica
       </p>
       <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
         {title}

@@ -12,7 +12,7 @@ export async function LatestPublications() {
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeading
             title="Latest publications"
-            description="Recent reports, bulletins, and statistical outputs released through Nile Metrika."
+            description="Recent reports, bulletins, and statistical outputs released through Nile Metrica."
           />
           <Link
             href="/publications"

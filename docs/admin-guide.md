@@ -1,8 +1,8 @@
-# Nile Metrika Admin Guide
+# Nile Metrica Admin Guide
 
 ## Overview
 
-Nile Metrika includes an admin system for managing:
+Nile Metrica includes an admin system for managing:
 
 - Publications
 - Datasets

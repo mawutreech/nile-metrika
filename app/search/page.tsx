@@ -97,7 +97,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16">
       <PublicPageIntro
         eyebrow="Search"
-        title="Search Nile Metrika"
+        title="Search Nile Metrica"
         description="Search across publications, datasets, and indicators from one place."
       />
 

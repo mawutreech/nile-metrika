@@ -52,7 +52,7 @@ export function SiteFooter() {
               </div>
               <div>
                 <p className="text-2xl font-light leading-none tracking-tight text-[#3f7f68]">
-                  Nile <span className="text-[#5f5aa2]">Metrika</span>
+                  Nile <span className="text-[#5f5aa2]">Metrica</span>
                 </p>
                 <p className="mt-1 text-[10px] uppercase tracking-[0.22em] text-slate-500">
                   South Sudan Knowledge Portal
@@ -61,7 +61,7 @@ export function SiteFooter() {
             </Link>
 
             <p className="mt-5 max-w-md text-sm leading-7 text-[#555]">
-              Nile Metrika brings together governance, geography, law, public
+              Nile Metrica brings together governance, geography, law, public
               information, and data in one structured portal for South Sudan.
             </p>
 
@@ -128,7 +128,7 @@ export function SiteFooter() {
 
         <div className="mt-8 border-t border-[#dcdcdc] pt-6 text-sm text-[#666]">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {year} Nile Metrika. South Sudan Knowledge Portal.</p>
+            <p>© {year} Nile Metrica. South Sudan Knowledge Portal.</p>
             <p>Coverage and content depth will continue expanding over time.</p>
           </div>
         </div>

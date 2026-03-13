@@ -5,7 +5,7 @@ export default function StatisticsPage() {
     <SectionLanding
       eyebrow="Data & Statistics"
       title="Data, statistics, and structured evidence"
-      description="Access datasets, indicators, census structures, methodology, maps, and downloads as one core module within Nile Metrika."
+      description="Access datasets, indicators, census structures, methodology, maps, and downloads as one core module within Nile Metrica."
       highlights={[
         {
           title: "Evidence layer",

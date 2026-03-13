@@ -21,7 +21,7 @@ export function AdminHeader({
           Admin
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-900">
-          Nile Metrika Admin
+          Nile Metrica Admin
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           Signed in as {email}

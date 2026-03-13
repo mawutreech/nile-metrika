@@ -5,8 +5,8 @@ export default function AboutPage() {
     <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16">
       <PublicPageIntro
         eyebrow="About"
-        title="About Nile Metrika"
-        description="Nile Metrika is a public-facing portal designed to make South Sudan’s statistical information more accessible, organized, and usable."
+        title="About Nile Metrica"
+        description="Nile Metrica is a public-facing portal designed to make South Sudan’s statistical information more accessible, organized, and usable."
       />
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -22,7 +22,7 @@ export default function AboutPage() {
         <section className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h2 className="text-xl font-semibold text-slate-900">Audience</h2>
           <p className="mt-4 text-sm leading-7 text-slate-600">
-            Nile Metrika is intended for researchers, policy practitioners,
+            Nile Metrica is intended for researchers, policy practitioners,
             institutions, journalists, students, and anyone who needs more
             structured access to public data and statistical outputs.
           </p>

@@ -24,15 +24,15 @@ export function Header() {
         <div className="flex h-20 items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
             <Image
-              src="/nile-metrika-logo.svg"
-              alt="Nile Metrika logo"
+              src="/nile-metrica-logo.svg"
+              alt="Nile Metrica logo"
               width={44}
               height={44}
               className="h-11 w-11 rounded-2xl"
             />
             <div>
               <p className="text-lg font-semibold tracking-tight text-slate-900">
-                Nile Metrika
+                Nile Metrica
               </p>
               <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
                 South Sudan Data Portal

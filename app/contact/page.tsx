@@ -6,7 +6,7 @@ export default function ContactPage() {
       <PublicPageIntro
         eyebrow="Contact"
         title="Get in touch"
-        description="Use this page for portal feedback, data questions, or general communication related to Nile Metrika."
+        description="Use this page for portal feedback, data questions, or general communication related to Nile Metrica."
       />
 
       <div className="mt-10 grid gap-6 lg:grid-cols-2">

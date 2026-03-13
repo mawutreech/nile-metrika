@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 
 export const metadata: Metadata = {
-  title: "Nile Metrika — South Sudan Knowledge Portal",
+  title: "Nile Metrica — South Sudan Knowledge Portal",
   description:
     "Explore South Sudan through governance, law, economy, geography, public services, states, territories, and data from one place.",
 };

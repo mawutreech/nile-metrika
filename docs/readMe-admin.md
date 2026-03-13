@@ -3,7 +3,7 @@
 ```md
 ## Admin Guide
 
-Nile Metrika includes a role-based admin for managing publications, datasets, indicators, and indicator values.
+Nile Metrica includes a role-based admin for managing publications, datasets, indicators, and indicator values.
 
 ### Roles
 

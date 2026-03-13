@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Nile Metrika",
-    short_name: "Nile Metrika",
+    name: "Nile Metrica",
+    short_name: "Nile Metrica",
     description:
       "South Sudan public portal for accessible, trusted, and structured statistical information.",
     start_url: "/",

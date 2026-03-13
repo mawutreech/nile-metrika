@@ -407,7 +407,7 @@ export function SiteHeader() {
 
             <div className="min-w-0">
               <p className="truncate text-[30px] font-light leading-none tracking-tight text-[#3f7f68] sm:text-[34px]">
-                Nile <span className="text-[#5f5aa2]">Metrika</span>
+                Nile <span className="text-[#5f5aa2]">Metrica</span>
               </p>
               <p className="mt-1 truncate text-[10px] uppercase tracking-[0.24em] text-slate-500 sm:text-[11px]">
                 South Sudan Knowledge Portal

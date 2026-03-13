@@ -554,7 +554,7 @@ export default function HomePage() {
                 Data & statistics
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-[#2f2f2f] sm:text-3xl">
-                Structured evidence remains a core part of Nile Metrika.
+                Structured evidence remains a core part of Nile Metrica.
               </h2>
             </div>
           </div>

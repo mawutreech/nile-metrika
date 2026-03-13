@@ -7,7 +7,7 @@ export function Footer() {
       <Container>
         <div className="grid gap-10 py-14 md:grid-cols-4">
           <div>
-            <h3 className="text-lg font-semibold text-white">Nile Metrika</h3>
+            <h3 className="text-lg font-semibold text-white">Nile Metrica</h3>
             <p className="mt-4 text-sm leading-7 text-slate-400">
               South Sudan’s public portal for accessible, trusted, and structured
               statistical information.

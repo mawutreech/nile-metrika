@@ -13,7 +13,7 @@ export default function MethodologyPage() {
         <section className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h2 className="text-xl font-semibold text-slate-900">Sources</h2>
           <p className="mt-4 text-sm leading-7 text-slate-600">
-            Nile Metrika brings together structured public information from
+            Nile Metrica brings together structured public information from
             recognized statistical and institutional sources. Source agencies
             are shown where available on datasets and indicators.
           </p>
