@@ -8,109 +8,11 @@ type MenuItem = {
   href: string;
 };
 
-type MenuGroup = {
+type NavGroup = {
   label: string;
-  sublabel: string;
   href?: string;
   items?: MenuItem[];
-  icon: React.ReactNode;
 };
-
-function PublicationsIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-9 w-9 text-slate-500"
-      aria-hidden="true"
-    >
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v10.5A2.5 2.5 0 0 1 6.5 19.5Z" />
-    </svg>
-  );
-}
-
-function DataIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-9 w-9 text-emerald-600"
-      aria-hidden="true"
-    >
-      <ellipse cx="12" cy="5" rx="7" ry="3" />
-      <path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5" />
-      <path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
-    </svg>
-  );
-}
-
-function CensusIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-9 w-9 text-slate-500"
-      aria-hidden="true"
-    >
-      <path d="M3 21h18" />
-      <path d="M5 21V8l7-5 7 5v13" />
-      <path d="M9 21v-6h6v6" />
-      <path d="M8 10h.01" />
-      <path d="M12 10h.01" />
-      <path d="M16 10h.01" />
-    </svg>
-  );
-}
-
-function MethodologyIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-9 w-9 text-slate-500"
-      aria-hidden="true"
-    >
-      <rect x="3" y="4" width="18" height="16" rx="2" />
-      <path d="M8 16v-3" />
-      <path d="M12 16V9" />
-      <path d="M16 16v-6" />
-      <circle cx="8" cy="10" r="1" fill="currentColor" stroke="none" />
-      <circle cx="12" cy="7" r="1" fill="currentColor" stroke="none" />
-      <circle cx="16" cy="8" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function AboutIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="h-8 w-8 text-slate-500"
-      aria-hidden="true"
-    >
-      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H14a2.5 2.5 0 0 1 2.5 2.5V11A2.5 2.5 0 0 1 14 13.5H9l-4 3V5.5Z" />
-      <path d="M20 8.5A2.5 2.5 0 0 0 17.5 6H17v5A4 4 0 0 1 13 15h-1.2l3.2 2.4V15h2.5A2.5 2.5 0 0 0 20 12.5v-4Z" />
-    </svg>
-  );
-}
 
 function SearchIcon() {
   return (
@@ -130,92 +32,95 @@ function SearchIcon() {
   );
 }
 
-const menuGroups: MenuGroup[] = [
+const navGroups: NavGroup[] = [
   {
-    label: "DATA",
-    sublabel: "datasets and indicators",
-    icon: <DataIcon />,
+    label: "Country",
     items: [
-      { label: "DATASETS", href: "/data" },
-      { label: "INDICATORS", href: "/indicators" },
+      { label: "Overview", href: "/country" },
+      { label: "Geography", href: "/country" },
+      { label: "History", href: "/country" },
+      { label: "Population", href: "/census" },
+      { label: "Administrative Structure", href: "/states" },
     ],
   },
   {
-    label: "PUBLICATIONS",
-    sublabel: "reports and bulletins",
-    icon: <PublicationsIcon />,
-    items: [{ label: "ALL PUBLICATIONS", href: "/publications" }],
-  },
-  {
-    label: "CENSUS",
-    sublabel: "states and areas",
-    icon: <CensusIcon />,
-    items: [{ label: "CENSUS OVERVIEW", href: "/census" }],
-  },
-  {
-    label: "METHODOLOGY",
-    sublabel: "sources and definitions",
-    icon: <MethodologyIcon />,
-    href: "/methodology",
-  },
-  {
-    label: "ABOUT",
-    sublabel: "portal and contact",
-    icon: <AboutIcon />,
+    label: "Governance",
     items: [
-      { label: "ABOUT NILE METRIKA", href: "/about" },
-      { label: "CONTACT", href: "/contact" },
+      { label: "Overview", href: "/governance" },
+      { label: "Executive", href: "/governance" },
+      { label: "Legislature", href: "/governance" },
+      { label: "Judiciary", href: "/governance" },
+      { label: "Local Government", href: "/states" },
     ],
   },
+  {
+    label: "Law & Constitution",
+    items: [
+      { label: "Overview", href: "/law" },
+      { label: "Constitution", href: "/law" },
+      { label: "Laws", href: "/law" },
+      { label: "Regulations", href: "/law" },
+      { label: "Policy Frameworks", href: "/law" },
+    ],
+  },
+  {
+    label: "Economy",
+    items: [
+      { label: "Overview", href: "/economy" },
+      { label: "Macroeconomy", href: "/economy" },
+      { label: "Public Finance", href: "/economy" },
+      { label: "Trade", href: "/economy" },
+      { label: "Agriculture", href: "/economy" },
+    ],
+  },
+  {
+    label: "Society & Services",
+    items: [
+      { label: "Overview", href: "/society" },
+      { label: "Education", href: "/society" },
+      { label: "Health", href: "/society" },
+      { label: "Water & Sanitation", href: "/society" },
+      { label: "Social Protection", href: "/society" },
+    ],
+  },
+  {
+    label: "Environment",
+    items: [
+      { label: "Overview", href: "/environment" },
+      { label: "Climate", href: "/environment" },
+      { label: "Land", href: "/environment" },
+      { label: "Water Resources", href: "/environment" },
+      { label: "Disaster Risk", href: "/environment" },
+    ],
+  },
+  {
+    label: "States & Territories",
+    items: [
+      { label: "Overview", href: "/states" },
+      { label: "All States", href: "/states" },
+      { label: "Administrative Areas", href: "/states" },
+      { label: "Census Explorer", href: "/census" },
+      { label: "County Profiles", href: "/census" },
+    ],
+  },
+  {
+    label: "Data & Statistics",
+    items: [
+      { label: "Overview", href: "/statistics" },
+      { label: "Datasets", href: "/data" },
+      { label: "Indicators", href: "/indicators" },
+      { label: "Census", href: "/census" },
+      { label: "Methodology", href: "/methodology" },
+      { label: "Publications", href: "/publications" },
+    ],
+  },
+  {
+    label: "Publications",
+    href: "/publications",
+  },
 ];
 
-const censusStates: MenuItem[] = [
-  { label: "Central Equatoria", href: "/census/central-equatoria" },
-  { label: "Eastern Equatoria", href: "/census/eastern-equatoria" },
-  { label: "Jonglei", href: "/census/jonglei" },
-  { label: "Lakes", href: "/census/lakes" },
-  { label: "Northern Bahr el Ghazal", href: "/census/northern-bahr-el-ghazal" },
-  { label: "Unity", href: "/census/unity" },
-  { label: "Upper Nile", href: "/census/upper-nile" },
-  { label: "Warrap", href: "/census/warrap" },
-  { label: "Western Bahr el Ghazal", href: "/census/western-bahr-el-ghazal" },
-  { label: "Western Equatoria", href: "/census/western-equatoria" },
-];
-
-const censusAreas: MenuItem[] = [
-  { label: "Abyei Administrative Area", href: "/census/abyei-administrative-area" },
-  { label: "Greater Pibor Administrative Area", href: "/census/greater-pibor-administrative-area" },
-  { label: "Ruweng Administrative Area", href: "/census/ruweng-administrative-area" },
-];
-
-const censusExplore: MenuItem[] = [
-  { label: "Census Overview", href: "/census" },
-  { label: "County Population Map", href: "/census" },
-  { label: "State & Area Explorer", href: "/census" },
-];
-
-const dataBrowse: MenuItem[] = [
-  { label: "All Datasets", href: "/data" },
-  { label: "All Indicators", href: "/indicators" },
-  { label: "Methodology", href: "/methodology" },
-];
-
-const dataThemes: MenuItem[] = [
-  { label: "Economy", href: "/data" },
-  { label: "Population", href: "/indicators" },
-  { label: "Agriculture", href: "/data" },
-  { label: "Education", href: "/indicators" },
-  { label: "Health", href: "/indicators" },
-  { label: "Environment", href: "/data" },
-];
-
-const dataTools: MenuItem[] = [
-  { label: "Search the portal", href: "/search" },
-  { label: "County population explorer", href: "/census" },
-  { label: "Publications", href: "/publications" },
-];
-
-function DropdownMenu({
+function DesktopDropdown({
   open,
   items,
 }: {
@@ -229,7 +134,6 @@ function DropdownMenu({
       setMounted(true);
       return;
     }
-
     const timer = setTimeout(() => setMounted(false), 180);
     return () => clearTimeout(timer);
   }, [open]);
@@ -238,220 +142,25 @@ function DropdownMenu({
 
   return (
     <>
-      <div className="absolute left-0 top-full h-4 w-full" />
+      <div className="absolute left-0 top-full h-3 w-full" />
       <div
         className={[
-          "absolute left-0 top-full z-50 max-h-[70vh] w-full overflow-y-auto origin-top border-x border-b border-slate-200 bg-white shadow-sm transition-all duration-200 ease-out",
-          open
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-1 pointer-events-none opacity-0",
+          "absolute left-0 top-full z-50 mt-3 min-w-[260px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl transition-all duration-200",
+          open ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0 pointer-events-none",
         ].join(" ")}
       >
-        {items.map((item) => (
+        {items.map((item, index) => (
           <Link
             key={item.href + item.label}
             href={item.href}
-            className="block border-t border-slate-100 px-5 py-3.5 text-center text-[12px] font-medium tracking-[0.08em] text-slate-700 transition hover:bg-slate-50"
+            className={[
+              "block px-5 py-3 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700",
+              index !== 0 ? "border-t border-slate-100" : "",
+            ].join(" ")}
           >
             {item.label}
           </Link>
         ))}
-      </div>
-    </>
-  );
-}
-
-function CensusMegaMenu({ open }: { open: boolean }) {
-  const [mounted, setMounted] = useState(open);
-
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      return;
-    }
-
-    const timer = setTimeout(() => setMounted(false), 180);
-    return () => clearTimeout(timer);
-  }, [open]);
-
-  if (!mounted) return null;
-
-  return (
-    <>
-      <div className="absolute left-0 top-full h-4 w-full" />
-      <div
-        className={[
-          "absolute left-0 top-full z-50 w-[900px] max-w-[90vw] origin-top rounded-b-[1.5rem] border border-slate-200 bg-white p-6 shadow-xl transition-all duration-200 ease-out",
-          open
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-1 pointer-events-none opacity-0",
-        ].join(" ")}
-      >
-        <div className="grid gap-8 md:grid-cols-3">
-          <div>
-            <p className="border-b border-slate-200 pb-3 text-sm font-semibold text-slate-900">
-              States
-            </p>
-            <div className="mt-3 space-y-2">
-              {censusStates.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="border-b border-slate-200 pb-3 text-sm font-semibold text-slate-900">
-              Administrative Areas
-            </p>
-            <div className="mt-3 space-y-2">
-              {censusAreas.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="border-b border-slate-200 pb-3 text-sm font-semibold text-slate-900">
-              Explore
-            </p>
-            <div className="mt-3 space-y-2">
-              {censusExplore.map((item) => (
-                <Link
-                  key={item.href + item.label}
-                  href={item.href}
-                  className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                Census
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
-                Browse states, administrative areas, counties, and population summaries.
-              </p>
-              <Link
-                href="/census"
-                className="mt-4 inline-block rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800"
-              >
-                Open census overview
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function DataMegaMenu({ open }: { open: boolean }) {
-  const [mounted, setMounted] = useState(open);
-
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      return;
-    }
-
-    const timer = setTimeout(() => setMounted(false), 180);
-    return () => clearTimeout(timer);
-  }, [open]);
-
-  if (!mounted) return null;
-
-  return (
-    <>
-      <div className="absolute left-0 top-full h-4 w-full" />
-      <div
-        className={[
-          "absolute left-0 top-full z-50 w-[900px] max-w-[90vw] origin-top rounded-b-[1.5rem] border border-slate-200 bg-white p-6 shadow-xl transition-all duration-200 ease-out",
-          open
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-1 pointer-events-none opacity-0",
-        ].join(" ")}
-      >
-        <div className="grid gap-8 md:grid-cols-3">
-          <div>
-            <p className="border-b border-slate-200 pb-3 text-sm font-semibold text-slate-900">
-              Browse
-            </p>
-            <div className="mt-3 space-y-2">
-              {dataBrowse.map((item) => (
-                <Link
-                  key={item.href + item.label}
-                  href={item.href}
-                  className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="border-b border-slate-200 pb-3 text-sm font-semibold text-slate-900">
-              Themes
-            </p>
-            <div className="mt-3 space-y-2">
-              {dataThemes.map((item) => (
-                <Link
-                  key={item.href + item.label}
-                  href={item.href}
-                  className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="border-b border-slate-200 pb-3 text-sm font-semibold text-slate-900">
-              Tools
-            </p>
-            <div className="mt-3 space-y-2">
-              {dataTools.map((item) => (
-                <Link
-                  key={item.href + item.label}
-                  href={item.href}
-                  className="block rounded-xl px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-emerald-700"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                Data & statistics
-              </p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
-                Explore datasets, indicators, and structured reference material from one place.
-              </p>
-              <Link
-                href="/data"
-                className="mt-4 inline-block rounded-xl bg-emerald-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-800"
-              >
-                Open data section
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
     </>
   );
@@ -476,9 +185,7 @@ export function SiteHeader() {
 
   const closeDropdownSoon = () => {
     clearCloseTimer();
-    closeTimerRef.current = setTimeout(() => {
-      setOpenMenu(null);
-    }, 220);
+    closeTimerRef.current = setTimeout(() => setOpenMenu(null), 220);
   };
 
   useEffect(() => {
@@ -499,7 +206,7 @@ export function SiteHeader() {
                 Nile <span className="text-indigo-700">Metrika</span>
               </p>
               <p className="mt-1 truncate text-[10px] uppercase tracking-[0.24em] text-slate-500 sm:text-[11px]">
-                South Sudan Data Portal
+                South Sudan Knowledge Portal
               </p>
             </div>
           </Link>
@@ -543,9 +250,9 @@ export function SiteHeader() {
         </div>
       </div>
 
-      <div className="hidden border-y border-slate-200 bg-white xl:block">
-        <div className="mx-auto grid max-w-7xl grid-cols-5">
-          {menuGroups.map((group) => {
+      <div className="hidden border-b border-slate-200 bg-white xl:block">
+        <div className="mx-auto flex max-w-7xl items-center gap-1 px-4 py-3 sm:px-6">
+          {navGroups.map((group) => {
             const isOpen = openMenu === group.label;
 
             if (group.href) {
@@ -553,15 +260,9 @@ export function SiteHeader() {
                 <Link
                   key={group.label}
                   href={group.href}
-                  className="flex min-h-[124px] flex-col items-center justify-center border-r border-slate-200 px-5 py-5 text-center transition last:border-r-0 hover:bg-slate-50"
+                  className="rounded-xl px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-slate-900"
                 >
-                  <div className="mb-2.5">{group.icon}</div>
-                  <p className="text-[14px] font-medium tracking-[0.06em] text-slate-800">
-                    {group.label}
-                  </p>
-                  <p className="mt-1 text-[12px] text-slate-600">
-                    {group.sublabel}
-                  </p>
+                  {group.label}
                 </Link>
               );
             }
@@ -569,7 +270,7 @@ export function SiteHeader() {
             return (
               <div
                 key={group.label}
-                className="relative border-r border-slate-200 last:border-r-0"
+                className="relative"
                 onMouseEnter={() => openDropdown(group.label)}
                 onMouseLeave={closeDropdownSoon}
               >
@@ -581,26 +282,16 @@ export function SiteHeader() {
                     )
                   }
                   className={[
-                    "flex min-h-[124px] w-full flex-col items-center justify-center px-5 py-5 text-center transition",
-                    isOpen ? "bg-slate-50" : "hover:bg-slate-50",
+                    "rounded-xl px-4 py-2 text-sm font-medium transition",
+                    isOpen
+                      ? "bg-slate-50 text-slate-900"
+                      : "text-slate-700 hover:bg-slate-50 hover:text-slate-900",
                   ].join(" ")}
                 >
-                  <div className="mb-2.5">{group.icon}</div>
-                  <p className="text-[14px] font-medium tracking-[0.06em] text-slate-800">
-                    {group.label}
-                  </p>
-                  <p className="mt-1 text-[12px] text-slate-600">
-                    {group.sublabel}
-                  </p>
+                  {group.label}
                 </button>
 
-                {group.label === "CENSUS" ? (
-                  <CensusMegaMenu open={isOpen} />
-                ) : group.label === "DATA" ? (
-                  <DataMegaMenu open={isOpen} />
-                ) : (
-                  <DropdownMenu open={isOpen} items={group.items || []} />
-                )}
+                <DesktopDropdown open={isOpen} items={group.items || []} />
               </div>
             );
           })}
@@ -611,7 +302,7 @@ export function SiteHeader() {
         className={[
           "overflow-hidden bg-white transition-all duration-200 lg:hidden",
           mobileOpen
-            ? "max-h-[90rem] border-b border-slate-200 opacity-100"
+            ? "max-h-[100rem] border-b border-slate-200 opacity-100"
             : "max-h-0 border-b-0 opacity-0",
         ].join(" ")}
       >
@@ -641,146 +332,31 @@ export function SiteHeader() {
               </div>
             </form>
 
-            {menuGroups.map((group) => (
+            {navGroups.map((group) => (
               <div
                 key={group.label}
                 className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
               >
-                <div className="flex items-center gap-3">
-                  <div>{group.icon}</div>
-                  <div>
-                    <p className="text-sm font-semibold tracking-[0.05em] text-slate-900">
-                      {group.label}
-                    </p>
-                    <p className="text-sm text-slate-600">{group.sublabel}</p>
-                  </div>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-slate-900">
+                    {group.label}
+                  </p>
+                  {group.href ? (
+                    <Link
+                      href={group.href}
+                      onClick={() => setMobileOpen(false)}
+                      className="text-sm font-medium text-emerald-700"
+                    >
+                      Open
+                    </Link>
+                  ) : null}
                 </div>
 
-                {group.label === "CENSUS" ? (
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        States
-                      </p>
-                      <div className="space-y-2">
-                        {censusStates.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        Administrative Areas
-                      </p>
-                      <div className="space-y-2">
-                        {censusAreas.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        Explore
-                      </p>
-                      <div className="space-y-2">
-                        {censusExplore.map((item) => (
-                          <Link
-                            key={item.href + item.label}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : group.label === "DATA" ? (
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        Browse
-                      </p>
-                      <div className="space-y-2">
-                        {dataBrowse.map((item) => (
-                          <Link
-                            key={item.href + item.label}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        Themes
-                      </p>
-                      <div className="space-y-2">
-                        {dataThemes.map((item) => (
-                          <Link
-                            key={item.href + item.label}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                        Tools
-                      </p>
-                      <div className="space-y-2">
-                        {dataTools.map((item) => (
-                          <Link
-                            key={item.href + item.label}
-                            href={item.href}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : group.href ? (
-                  <Link
-                    href={group.href}
-                    onClick={() => setMobileOpen(false)}
-                    className="mt-3 block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
-                  >
-                    Open
-                  </Link>
-                ) : (
+                {group.items ? (
                   <div className="mt-3 space-y-2">
-                    {(group.items || []).map((item) => (
+                    {group.items.map((item) => (
                       <Link
-                        key={item.href}
+                        key={item.href + item.label}
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className="block rounded-xl bg-white px-4 py-3 text-sm text-slate-700 shadow-sm"
@@ -789,7 +365,7 @@ export function SiteHeader() {
                       </Link>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
 
