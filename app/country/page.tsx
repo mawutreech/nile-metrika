@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
 import { SectionLanding } from "@/components/site/SectionLanding";
+
+export const metadata: Metadata = {
+  title: "South Sudan Country Overview",
+  description:
+    "Explore South Sudan through national overview, geography, population, administrative structure, and core public reference pathways.",
+  alternates: {
+    canonical: "https://nilemetrica.com/country",
+  },
+};
 
 export default function CountryPage() {
   return (

@@ -2,7 +2,16 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { PublicPageIntro } from "@/components/site/PublicPageIntro";
 import { CensusOverviewInteractive } from "@/components/census/CensusOverviewInteractive";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "South Sudan Census Explorer",
+  description:
+    "Explore South Sudan’s states, counties, payams, population totals, and administrative hierarchy through the census explorer.",
+  alternates: {
+    canonical: "https://nilemetrica.com/census",
+  },
+};
 type CountyPopulationRow = {
   id: string;
   name: string;

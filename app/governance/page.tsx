@@ -1,59 +1,69 @@
+import type { Metadata } from "next";
 import { SectionLanding } from "@/components/site/SectionLanding";
+
+export const metadata: Metadata = {
+  title: "Governance in South Sudan",
+  description:
+    "Browse South Sudan’s governance structures, institutions, executive, legislature, judiciary, decentralization, and public administration pathways.",
+  alternates: {
+    canonical: "https://nilemetrica.com/governance",
+  },
+};
 
 export default function GovernancePage() {
   return (
     <SectionLanding
       eyebrow="Governance"
       title="Governance and public institutions"
+      description="Browse institutions, executive structures, legislature, judiciary, decentralization, and public administration pathways in South Sudan."
       heroImageSrc="/images/sections/governance-coat-of-arms.jpg"
       heroImageAlt="South Sudan coat of arms"
-      description="Explore how South Sudan is governed through executive structures, public institutions, decentralization, and local government."
       highlights={[
         {
-          title: "Institutional structure",
+          title: "Institutional overview",
           description:
-            "Understand the main public institutions and governance layers that shape the state.",
+            "Understand the structure of public authority and national institutions in South Sudan.",
         },
         {
-          title: "National to local",
+          title: "Public system",
           description:
-            "Connect central governance with decentralization, local government, and subnational administration.",
+            "Connect governance themes to administration, decentralization, and local government structures.",
         },
         {
-          title: "Linked constitutional context",
+          title: "Linked legal framework",
           description:
-            "Move from governance structures into the legal and constitutional framework that supports them.",
+            "Move between governance practice and the legal and constitutional framework behind it.",
         },
       ]}
       sections={[
         {
           title: "Executive",
           description:
-            "Understand the national executive layer and its public role.",
+            "Follow the national executive structure and associated public functions.",
           href: "/governance",
         },
         {
           title: "Legislature",
           description:
-            "Reference the legislative structure and broader governance framework.",
+            "Browse legislative institutions and their place within the state structure.",
           href: "/governance",
         },
         {
           title: "Judiciary",
           description:
-            "Link judicial structure to the wider constitutional and legal system.",
+            "Connect governance to judicial institutions and rule-of-law pathways.",
+          href: "/governance",
+        },
+        {
+          title: "Public Administration",
+          description:
+            "Understand ministries, administration, and the operation of the public system.",
           href: "/governance",
         },
         {
           title: "Local Government",
           description:
-            "Trace governance below the national level into states and local administration.",
-          href: "/states",
-        },
-        {
-          title: "Decentralization",
-          description:
-            "Understand devolved functions and the structure of subnational governance.",
+            "Bridge national governance with state and local administrative structure.",
           href: "/states",
         },
       ]}
@@ -61,26 +71,26 @@ export default function GovernancePage() {
         {
           title: "Law & Constitution",
           description:
-            "Move from governance structure into constitutional and legal reference.",
+            "Connect governance structures to constitutional and legal foundations.",
           href: "/law",
         },
         {
           title: "States & Territories",
           description:
-            "See how governance connects to the territorial and administrative hierarchy.",
+            "Understand governance as it connects to states, counties, payams, and local administration.",
           href: "/states",
         },
         {
           title: "Publications",
           description:
-            "Open reports and public-facing resources related to governance and institutional themes.",
+            "Use reports and briefs as supporting material on institutions and governance.",
           href: "/publications",
         },
       ]}
       relatedLinks={[
+        { title: "Country", href: "/country" },
         { title: "Law & Constitution", href: "/law" },
         { title: "States & Territories", href: "/states" },
-        { title: "Publications", href: "/publications" },
       ]}
     />
   );

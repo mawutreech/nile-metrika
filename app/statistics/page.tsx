@@ -1,57 +1,67 @@
+import type { Metadata } from "next";
 import { SectionLanding } from "@/components/site/SectionLanding";
+
+export const metadata: Metadata = {
+  title: "South Sudan Data and Statistics",
+  description:
+    "Access South Sudan datasets, indicators, census geography, publications, methodology, maps, and structured public evidence.",
+  alternates: {
+    canonical: "https://nilemetrica.com/statistics",
+  },
+};
 
 export default function StatisticsPage() {
   return (
     <SectionLanding
       eyebrow="Data & Statistics"
-      title="Data, statistics, and structured evidence"
-      description="Access datasets, indicators, census structures, methodology, maps, and downloads as one core module within Nile Metrica."
+      title="Data, indicators, and structured evidence"
+      description="Access datasets, indicators, census geography, publications, methodology, maps, and structured public evidence."
       highlights={[
         {
           title: "Evidence layer",
           description:
-            "Use this section as the structured data and statistical foundation of the broader portal.",
+            "Use this section as the structured evidence base across the wider Nile Metrica portal.",
         },
         {
-          title: "From data to interpretation",
+          title: "Connected datasets",
           description:
-            "Connect raw datasets and indicators to publications, geography, and national themes.",
+            "Move between data, indicators, geography, and publications through a single public reference pathway.",
         },
         {
-          title: "Public reference support",
+          title: "Method and context",
           description:
-            "Support country, governance, economy, society, and environment pages with structured evidence.",
+            "Pair structured evidence with methodology and public interpretation.",
         },
       ]}
       sections={[
         {
           title: "Datasets",
           description:
-            "Browse downloadable datasets with metadata and structured documentation.",
+            "Open downloadable data resources and linked metadata.",
           href: "/data",
         },
         {
           title: "Indicators",
           description:
-            "Review measures, definitions, and time-series values.",
+            "Browse statistical indicators and structured measures.",
           href: "/indicators",
         },
         {
           title: "Census",
           description:
-            "Explore states, counties, payams, and population through maps and hierarchy pages.",
+            "Explore geography-linked population and administrative structure.",
           href: "/census",
         },
         {
           title: "Methodology",
           description:
-            "Read definitions, notes, and methodological guidance.",
+            "Use definitions, sources, and methods to interpret data properly.",
           href: "/methodology",
         },
         {
           title: "Publications",
           description:
-            "Connect data products with reports, bulletins, and briefs.",
+            "Connect structured evidence to reports, bulletins, and public outputs.",
           href: "/publications",
         },
       ]}
@@ -59,26 +69,26 @@ export default function StatisticsPage() {
         {
           title: "Datasets",
           description:
-            "Open downloadable evidence resources across themes and sectors.",
+            "Browse downloadable data and public reference materials.",
           href: "/data",
         },
         {
           title: "Indicators",
           description:
-            "Browse the structured measures that support public understanding and analysis.",
+            "Use structured measures as a guide to evidence across themes.",
           href: "/indicators",
         },
         {
-          title: "Census",
+          title: "Census Explorer",
           description:
-            "Use the geography and population explorer as a bridge between statistics and place.",
+            "Open geography-linked population and hierarchy exploration.",
           href: "/census",
         },
       ]}
       relatedLinks={[
-        { title: "Search", href: "/search" },
+        { title: "Country", href: "/country" },
+        { title: "Economy", href: "/economy" },
         { title: "Publications", href: "/publications" },
-        { title: "States & Territories", href: "/states" },
       ]}
     />
   );

@@ -1,53 +1,69 @@
+import type { Metadata } from "next";
 import { SectionLanding } from "@/components/site/SectionLanding";
+
+export const metadata: Metadata = {
+  title: "States and Territories of South Sudan",
+  description:
+    "Browse South Sudan’s states, administrative areas, counties, payams, bomas, and subnational geography through Nile Metrica.",
+  alternates: {
+    canonical: "https://nilemetrica.com/states",
+  },
+};
 
 export default function StatesPage() {
   return (
     <SectionLanding
       eyebrow="States & Territories"
       title="States, territories, and local geography"
+      description="Move from the national level into states, administrative areas, counties, payams, bomas, and subnational structure."
       heroImageSrc="/images/sections/states-map.jpg"
       heroImageAlt="Map of South Sudan states"
-      description="Move from national structure into states, administrative areas, counties, payams, and bomas."
       highlights={[
         {
-          title: "Geographic entry point",
+          title: "Geographic hierarchy",
           description:
-            "Use this section to move from national understanding into the territorial structure of South Sudan.",
+            "Use this section to understand South Sudan through territorial and administrative layers.",
         },
         {
-          title: "Subnational exploration",
+          title: "Subnational structure",
           description:
-            "Follow administrative hierarchy from states and areas to counties, payams, and bomas.",
+            "Connect states, counties, payams, and bomas through a consistent public reference structure.",
         },
         {
-          title: "Linked maps and population",
+          title: "Linked census geography",
           description:
-            "Connect local geography to census, population, maps, and related public resources.",
+            "Move into the census explorer for population-linked subnational navigation.",
         },
       ]}
       sections={[
         {
           title: "States",
           description:
-            "Browse state-level profiles, structures, and linked subnational content.",
-          href: "/census",
+            "Browse state-level geography and subnational entry points.",
+          href: "/states",
         },
         {
           title: "Administrative Areas",
           description:
-            "Access territorial pages alongside the states within one geographic framework.",
+            "Connect administrative areas and territorial distinctions within the national structure.",
+          href: "/states",
+        },
+        {
+          title: "Counties",
+          description:
+            "Move into county-level reference and linked local profiles.",
           href: "/census",
         },
         {
-          title: "County Profiles",
+          title: "Payams and Bomas",
           description:
-            "Drill down into counties, population, maps, and linked subnational profiles.",
+            "Follow finer layers of administrative and census geography.",
           href: "/census",
         },
         {
-          title: "Payam & Boma Hierarchy",
+          title: "Local Profiles",
           description:
-            "Follow the lower levels of local administration and settlement structure.",
+            "Use geography as a bridge into local public information and future profiles.",
           href: "/census",
         },
       ]}
@@ -55,26 +71,26 @@ export default function StatesPage() {
         {
           title: "Census Explorer",
           description:
-            "Open the geography and population explorer across the whole administrative hierarchy.",
+            "Browse the population and hierarchy explorer for states, counties, and payams.",
           href: "/census",
         },
         {
           title: "Country",
           description:
-            "Return to the national frame and administrative structure overview.",
+            "Return to the national-level overview of South Sudan and its administrative structure.",
           href: "/country",
         },
         {
-          title: "Data & Statistics",
+          title: "Governance",
           description:
-            "Use linked evidence, indicators, and datasets alongside local geography.",
-          href: "/statistics",
+            "Connect territorial structure to decentralization and public administration.",
+          href: "/governance",
         },
       ]}
       relatedLinks={[
-        { title: "Census Explorer", href: "/census" },
         { title: "Country", href: "/country" },
-        { title: "Data & Statistics", href: "/statistics" },
+        { title: "Governance", href: "/governance" },
+        { title: "Census Explorer", href: "/census" },
       ]}
     />
   );

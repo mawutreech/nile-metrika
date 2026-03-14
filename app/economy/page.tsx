@@ -1,86 +1,96 @@
+import type { Metadata } from "next";
 import { SectionLanding } from "@/components/site/SectionLanding";
+
+export const metadata: Metadata = {
+  title: "South Sudan Economy",
+  description:
+    "Explore South Sudan’s macroeconomic structure, trade, agriculture, public finance, labour, and productive sectors through Nile Metrica.",
+  alternates: {
+    canonical: "https://nilemetrica.com/economy",
+  },
+};
 
 export default function EconomyPage() {
   return (
     <SectionLanding
       eyebrow="Economy"
       title="Economy and productive sectors"
+      description="Explore macroeconomic structure, trade, agriculture, public finance, labour, and wider productive sectors."
       heroImageSrc="/images/sections/economy-central-bank.jpg"
       heroImageAlt="Central Bank of South Sudan building"
-      description="Explore macroeconomic structure, trade, agriculture, public finance, labour, and wider productive sectors."
       highlights={[
         {
-          title: "National economic view",
+          title: "Macroeconomic pathway",
           description:
-            "Use this section as a structured entry point into how the South Sudanese economy is organized.",
+            "Use this section to structure understanding of national economic performance and public finance.",
         },
         {
-          title: "Sector pathways",
+          title: "Productive sectors",
           description:
-            "Connect macroeconomy to public finance, trade, agriculture, labour, and extractive sectors.",
+            "Connect agriculture, trade, labour, and wider production themes in one section.",
         },
         {
-          title: "Evidence-linked exploration",
+          title: "Evidence-linked",
           description:
-            "Move from economic themes into indicators, datasets, and publications that support analysis.",
+            "Move from economic themes into data, indicators, and publications for deeper evidence.",
         },
       ]}
       sections={[
         {
           title: "Macroeconomy",
           description:
-            "Develop a national reference layer for growth, inflation, and broad economic structure.",
+            "Organize inflation, growth, exchange rate, and national economic structure.",
           href: "/economy",
         },
         {
           title: "Public Finance",
           description:
-            "Link budgets, revenue, expenditure, and state capacity to public analysis.",
+            "Connect budgets, expenditure, revenue, and fiscal structure.",
           href: "/economy",
         },
         {
           title: "Trade",
           description:
-            "Follow external trade, border flows, and broader market linkages.",
+            "Browse external trade, market links, and economic connectivity themes.",
           href: "/economy",
         },
         {
           title: "Agriculture",
           description:
-            "Connect agriculture to livelihoods, land, and state-level economic realities.",
+            "Use agriculture as a core pillar of productive-sector understanding.",
           href: "/economy",
         },
         {
-          title: "Oil & Extractives",
+          title: "Labour and Markets",
           description:
-            "Reference the national role of extractive sectors in the wider economy.",
+            "Follow labour-market and economic participation pathways.",
           href: "/economy",
         },
       ]}
       featuredResources={[
         {
-          title: "Indicators",
+          title: "Data & Statistics",
           description:
-            "Use the indicators section as the structured evidence layer for economic themes.",
-          href: "/indicators",
-        },
-        {
-          title: "Datasets",
-          description:
-            "Browse downloadable data relevant to macroeconomic and sectoral topics.",
-          href: "/data",
+            "Access datasets, indicators, and structured evidence for economic themes.",
+          href: "/statistics",
         },
         {
           title: "Publications",
           description:
-            "Open reports and analytical outputs related to economic structure and performance.",
+            "Use reports and briefs to support economic interpretation.",
           href: "/publications",
+        },
+        {
+          title: "Country",
+          description:
+            "Return to the broader national overview that frames economic structure.",
+          href: "/country",
         },
       ]}
       relatedLinks={[
+        { title: "Country", href: "/country" },
         { title: "Data & Statistics", href: "/statistics" },
         { title: "Publications", href: "/publications" },
-        { title: "States & Territories", href: "/states" },
       ]}
     />
   );
