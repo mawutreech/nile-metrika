@@ -11,7 +11,7 @@ type MenuItem = {
 type NavGroup = {
   label: string;
   sublabel: string;
-  href?: string;
+  href: string;
   items?: MenuItem[];
   icon: React.ReactNode;
 };
@@ -220,9 +220,9 @@ const navGroups: NavGroup[] = [
   {
     label: "COUNTRY",
     sublabel: "overview and geography",
+    href: "/country",
     icon: <GlobeIcon />,
     items: [
-      { label: "Overview", href: "/country" },
       { label: "Geography", href: "/country" },
       { label: "History", href: "/country" },
       { label: "Population", href: "/census" },
@@ -232,9 +232,9 @@ const navGroups: NavGroup[] = [
   {
     label: "GOVERNANCE",
     sublabel: "institutions and public system",
+    href: "/governance",
     icon: <GovernmentIcon />,
     items: [
-      { label: "Overview", href: "/governance" },
       { label: "Executive", href: "/governance" },
       { label: "Legislature", href: "/governance" },
       { label: "Judiciary", href: "/governance" },
@@ -244,21 +244,22 @@ const navGroups: NavGroup[] = [
   {
     label: "LAW",
     sublabel: "constitution and policy",
+    href: "/law",
     icon: <LawIcon />,
     items: [
-      { label: "Overview", href: "/law" },
       { label: "Constitution", href: "/law" },
       { label: "Laws", href: "/law" },
       { label: "Regulations", href: "/law" },
       { label: "Policy Frameworks", href: "/law" },
+      { label: "Local Government Act, 2009", href: "/law/local-government-act" },
     ],
   },
   {
     label: "ECONOMY",
     sublabel: "markets and public finance",
+    href: "/economy",
     icon: <EconomyIcon />,
     items: [
-      { label: "Overview", href: "/economy" },
       { label: "Macroeconomy", href: "/economy" },
       { label: "Public Finance", href: "/economy" },
       { label: "Trade", href: "/economy" },
@@ -268,9 +269,9 @@ const navGroups: NavGroup[] = [
   {
     label: "SOCIETY",
     sublabel: "services and human development",
+    href: "/society",
     icon: <SocietyIcon />,
     items: [
-      { label: "Overview", href: "/society" },
       { label: "Education", href: "/society" },
       { label: "Health", href: "/society" },
       { label: "Water & Sanitation", href: "/society" },
@@ -280,9 +281,9 @@ const navGroups: NavGroup[] = [
   {
     label: "ENVIRONMENT",
     sublabel: "land, climate and resources",
+    href: "/environment",
     icon: <EnvironmentIcon />,
     items: [
-      { label: "Overview", href: "/environment" },
       { label: "Climate", href: "/environment" },
       { label: "Land", href: "/environment" },
       { label: "Water Resources", href: "/environment" },
@@ -292,9 +293,9 @@ const navGroups: NavGroup[] = [
   {
     label: "STATES",
     sublabel: "territories and local geography",
+    href: "/states",
     icon: <MapIcon />,
     items: [
-      { label: "Overview", href: "/states" },
       { label: "All States", href: "/states" },
       { label: "Administrative Areas", href: "/states" },
       { label: "Census Explorer", href: "/census" },
@@ -304,9 +305,9 @@ const navGroups: NavGroup[] = [
   {
     label: "DATA & STATS",
     sublabel: "datasets and indicators",
+    href: "/statistics",
     icon: <DataIcon />,
     items: [
-      { label: "Overview", href: "/statistics" },
       { label: "Datasets", href: "/data" },
       { label: "Indicators", href: "/indicators" },
       { label: "Census", href: "/census" },
@@ -317,8 +318,8 @@ const navGroups: NavGroup[] = [
   {
     label: "PUBLICATIONS",
     sublabel: "reports and briefs",
-    icon: <PublicationIcon />,
     href: "/publications",
+    icon: <PublicationIcon />,
   },
 ];
 
@@ -462,49 +463,26 @@ export function SiteHeader() {
           {navGroups.map((group) => {
             const isOpen = openMenu === group.label;
 
-            if (group.href) {
-              return (
-                <Link
-                  key={group.label}
-                  href={group.href}
-                  className="group flex min-h-[132px] flex-col items-center justify-center border-r border-[#dcdcdc] px-4 py-5 text-center transition hover:bg-white last:border-r-0"
-                >
-                  <div className="mb-4 text-slate-500 transition group-hover:text-[#3f7f68]">
-                    {group.icon}
-                  </div>
-                  <p className="text-[14px] font-medium leading-5 text-[#333]">
-                    {group.label}
-                  </p>
-                  <p className="mt-1 text-[11px] leading-5 text-[#555]">
-                    {group.sublabel}
-                  </p>
-                </Link>
-              );
-            }
-
             return (
               <div
                 key={group.label}
                 className="relative border-r border-[#dcdcdc] last:border-r-0"
-                onMouseEnter={() => openDropdown(group.label)}
+                onMouseEnter={() => group.items && openDropdown(group.label)}
                 onMouseLeave={closeDropdownSoon}
               >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setOpenMenu((current) =>
-                      current === group.label ? null : group.label
-                    )
-                  }
+                <Link
+                  href={group.href}
                   className={[
-                    "flex min-h-[132px] w-full flex-col items-center justify-center px-4 py-5 text-center transition",
+                    "group flex min-h-[132px] w-full flex-col items-center justify-center px-4 py-5 text-center transition",
                     isOpen ? "bg-white" : "hover:bg-white",
                   ].join(" ")}
                 >
                   <div
                     className={[
                       "mb-4 transition",
-                      isOpen ? "text-[#3f7f68]" : "text-slate-500",
+                      isOpen
+                        ? "text-[#3f7f68]"
+                        : "text-slate-500 group-hover:text-[#3f7f68]",
                     ].join(" ")}
                   >
                     {group.icon}
@@ -515,9 +493,11 @@ export function SiteHeader() {
                   <p className="mt-1 text-[11px] leading-5 text-[#555]">
                     {group.sublabel}
                   </p>
-                </button>
+                </Link>
 
-                <DesktopDropdown open={isOpen} items={group.items || []} />
+                {group.items ? (
+                  <DesktopDropdown open={isOpen} items={group.items} />
+                ) : null}
               </div>
             );
           })}
@@ -576,15 +556,13 @@ export function SiteHeader() {
                     </div>
                   </div>
 
-                  {group.href ? (
-                    <Link
-                      href={group.href}
-                      onClick={() => setMobileOpen(false)}
-                      className="text-sm font-medium text-[#2f6e57]"
-                    >
-                      Open
-                    </Link>
-                  ) : null}
+                  <Link
+                    href={group.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-sm font-medium text-[#2f6e57]"
+                  >
+                    Open
+                  </Link>
                 </div>
 
                 {group.items ? (
