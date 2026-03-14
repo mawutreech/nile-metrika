@@ -5,6 +5,8 @@ export default function GovernancePage() {
     <SectionLanding
       eyebrow="Governance"
       title="Governance and public institutions"
+      heroImageSrc="/images/sections/governance-coat-of-arms.jpg"
+      heroImageAlt="South Sudan coat of arms"
       description="Explore how South Sudan is governed through executive structures, public institutions, decentralization, and local government."
       highlights={[
         {

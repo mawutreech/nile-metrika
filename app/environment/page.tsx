@@ -5,6 +5,8 @@ export default function EnvironmentPage() {
     <SectionLanding
       eyebrow="Environment"
       title="Environment and natural systems"
+      heroImageSrc="/images/sections/environment-nile-river.jpg"
+      heroImageAlt="Nile River in South Sudan"
       description="Explore climate, land, water, forestry, biodiversity, and environmental governance across South Sudan."
       highlights={[
         {

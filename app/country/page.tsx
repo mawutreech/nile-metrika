@@ -6,6 +6,8 @@ export default function CountryPage() {
       eyebrow="Country"
       title="South Sudan"
       description="Explore South Sudan through national overview, geography, population, administrative structure, and core reference pathways across the portal."
+      heroImageSrc="/images/sections/country-flag.jpg"
+      heroImageAlt="South Sudan flag"
       highlights={[
         {
           title: "National entry point",

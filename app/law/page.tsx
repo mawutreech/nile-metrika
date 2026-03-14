@@ -5,6 +5,8 @@ export default function LawPage() {
     <SectionLanding
       eyebrow="Law & Constitution"
       title="Law, constitution, and policy"
+      heroImageSrc="/images/sections/law-balance-scale.jpg"
+      heroImageAlt="Scale of Justice"
       description="Use Nile Metrica as an entry point into the constitutional, legal, and policy framework of South Sudan."
       highlights={[
         {

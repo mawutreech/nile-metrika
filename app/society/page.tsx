@@ -5,6 +5,8 @@ export default function SocietyPage() {
     <SectionLanding
       eyebrow="Society & Services"
       title="Society, services, and human development"
+      heroImageSrc="/images/sections/society-school.jpg"
+      heroImageAlt="School in South Sudan"
       description="Browse education, health, social protection, water, sanitation, and wider public-service themes."
       highlights={[
         {

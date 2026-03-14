@@ -5,6 +5,8 @@ export default function EconomyPage() {
     <SectionLanding
       eyebrow="Economy"
       title="Economy and productive sectors"
+      heroImageSrc="/images/sections/economy-central-bank.jpg"
+      heroImageAlt="Central Bank of South Sudan building"
       description="Explore macroeconomic structure, trade, agriculture, public finance, labour, and wider productive sectors."
       highlights={[
         {

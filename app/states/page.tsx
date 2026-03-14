@@ -5,6 +5,8 @@ export default function StatesPage() {
     <SectionLanding
       eyebrow="States & Territories"
       title="States, territories, and local geography"
+      heroImageSrc="/images/sections/states-map.jpg"
+      heroImageAlt="Map of South Sudan states"
       description="Move from national structure into states, administrative areas, counties, payams, and bomas."
       highlights={[
         {
