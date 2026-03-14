@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+import type { Metadata } from "next";
 function CountryIcon() {
   return (
     <svg
@@ -308,7 +308,14 @@ const highlightStats = [
   { value: "79", label: "Counties" },
   { value: "515", label: "Payams" },
 ];
-
+export const metadata: Metadata = {
+  title: "South Sudan Knowledge Portal",
+  description:
+    "Explore South Sudan through governance, law, economy, geography, public services, states, territories, and data from one place.",
+  alternates: {
+    canonical: "https://nilemetrica.com",
+  },
+};
 export default function HomePage() {
   return (
     <main>
