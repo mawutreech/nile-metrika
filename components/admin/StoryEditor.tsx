@@ -20,7 +20,7 @@ export default function StoryEditor({ value, onChange }: Props) {
       }),
       Image,
     ],
-    content: value,
+    content: value || "<p></p>",
     immediatelyRender: false,
     editorProps: {
       attributes: {
@@ -35,7 +35,7 @@ export default function StoryEditor({ value, onChange }: Props) {
 
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || "<p></p>", false);
+      editor.commands.setContent(value || "<p></p>");
     }
   }, [editor, value]);
 
@@ -44,18 +44,38 @@ export default function StoryEditor({ value, onChange }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className="border px-3 py-1">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className="border px-3 py-1"
+        >
           Bold
         </button>
-        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className="border px-3 py-1">
+
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className="border px-3 py-1"
+        >
           Italic
         </button>
-        <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className="border px-3 py-1">
+
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className="border px-3 py-1"
+        >
           H2
         </button>
-        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className="border px-3 py-1">
+
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className="border px-3 py-1"
+        >
           Bullet List
         </button>
+
         <button
           type="button"
           onClick={() => {
@@ -66,6 +86,7 @@ export default function StoryEditor({ value, onChange }: Props) {
         >
           Link
         </button>
+
         <button
           type="button"
           onClick={() => {
