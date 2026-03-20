@@ -8,10 +8,16 @@ type MenuItem = {
   href: string;
 };
 
+type RegionGroup = {
+  label: string;
+  items: MenuItem[];
+};
+
 type NavGroup = {
   label: string;
   href: string;
   items?: MenuItem[];
+  regions?: RegionGroup[];
 };
 
 const navGroups: NavGroup[] = [
@@ -22,11 +28,59 @@ const navGroups: NavGroup[] = [
   {
     label: "States & Territories",
     href: "/states",
-    items: [
-      { label: "States Overview", href: "/states" },
-      { label: "Country Overview", href: "/country" },
-      { label: "Census", href: "/census" },
-      { label: "Administrative Structure", href: "/states" },
+    regions: [
+      {
+        label: "Greater Bahr el Ghazal",
+        items: [
+          {
+            label: "Abyei Administrative Area",
+            href: "/states/abyei-administrative-area",
+          },
+          { label: "Lakes", href: "/states/lakes" },
+          {
+            label: "Northern Bahr el Ghazal",
+            href: "/states/northern-bahr-el-ghazal",
+          },
+          { label: "Warrap", href: "/states/warrap" },
+          {
+            label: "Western Bahr el Ghazal",
+            href: "/states/western-bahr-el-ghazal",
+          },
+        ],
+      },
+      {
+        label: "Greater Equatoria",
+        items: [
+          {
+            label: "Central Equatoria",
+            href: "/states/central-equatoria",
+          },
+          {
+            label: "Eastern Equatoria",
+            href: "/states/eastern-equatoria",
+          },
+          {
+            label: "Western Equatoria",
+            href: "/states/western-equatoria",
+          },
+        ],
+      },
+      {
+        label: "Greater Upper Nile",
+        items: [
+          { label: "Jonglei", href: "/states/jonglei" },
+          { label: "Unity", href: "/states/unity" },
+          { label: "Upper Nile", href: "/states/upper-nile" },
+          {
+            label: "Greater Pibor Administrative Area",
+            href: "/states/greater-pibor-administrative-area",
+          },
+          {
+            label: "Ruweng Administrative Area",
+            href: "/states/ruweng-administrative-area",
+          },
+        ],
+      },
     ],
   },
   {
@@ -108,9 +162,11 @@ function formatToday() {
 function DesktopDropdown({
   open,
   items,
+  regions,
 }: {
   open: boolean;
-  items: MenuItem[];
+  items?: MenuItem[];
+  regions?: RegionGroup[];
 }) {
   const [mounted, setMounted] = useState(open);
 
@@ -125,29 +181,57 @@ function DesktopDropdown({
 
   if (!mounted) return null;
 
+  const hasRegions = regions && regions.length > 0;
+
   return (
     <>
       <div className="absolute left-0 top-full h-3 w-full" />
       <div
         className={[
-          "absolute left-1/2 top-full z-50 mt-3 min-w-[260px] -translate-x-1/2 overflow-hidden border border-[#d9d9d9] bg-white shadow-lg transition-all duration-200",
+          "absolute left-1/2 top-full z-50 mt-3 -translate-x-1/2 overflow-hidden border border-[#d9d9d9] bg-white shadow-lg transition-all duration-200",
+          hasRegions ? "min-w-[520px]" : "min-w-[260px]",
           open
             ? "translate-y-0 opacity-100"
             : "-translate-y-1 pointer-events-none opacity-0",
         ].join(" ")}
       >
-        {items.map((item, index) => (
-          <Link
-            key={item.href + item.label}
-            href={item.href}
-            className={[
-              "block px-5 py-3 text-sm text-[#333] transition hover:bg-[#f7f7f5] hover:text-[#2f6e57]",
-              index !== 0 ? "border-t border-[#ececec]" : "",
-            ].join(" ")}
-          >
-            {item.label}
-          </Link>
-        ))}
+        {hasRegions ? (
+          <div className="max-h-[34rem] overflow-y-auto p-4">
+            <div className="grid gap-5 md:grid-cols-3">
+              {regions.map((region) => (
+                <div key={region.label}>
+                  <div className="mb-2 border-b border-[#ececec] pb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#2f6e57]">
+                    {region.label}
+                  </div>
+                  <div className="space-y-1">
+                    {region.items.map((item) => (
+                      <Link
+                        key={item.href + item.label}
+                        href={item.href}
+                        className="block px-2 py-2 text-sm text-[#333] transition hover:bg-[#f7f7f5] hover:text-[#2f6e57]"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          items?.map((item, index) => (
+            <Link
+              key={item.href + item.label}
+              href={item.href}
+              className={[
+                "block px-5 py-3 text-sm text-[#333] transition hover:bg-[#f7f7f5] hover:text-[#2f6e57]",
+                index !== 0 ? "border-t border-[#ececec]" : "",
+              ].join(" ")}
+            >
+              {item.label}
+            </Link>
+          ))
+        )}
       </div>
     </>
   );
@@ -155,7 +239,9 @@ function DesktopDropdown({
 
 export default function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileSectionOpen, setMobileSectionOpen] = useState<string | null>(null);
+  const [mobileSectionOpen, setMobileSectionOpen] = useState<string | null>(
+    null
+  );
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -274,7 +360,9 @@ export default function SiteHeader() {
                   <div
                     key={group.label}
                     className="relative"
-                    onMouseEnter={() => group.items && openDropdown(group.label)}
+                    onMouseEnter={() =>
+                      (group.items || group.regions) && openDropdown(group.label)
+                    }
                     onMouseLeave={closeDropdownSoon}
                   >
                     <Link
@@ -284,8 +372,12 @@ export default function SiteHeader() {
                       {group.label}
                     </Link>
 
-                    {group.items ? (
-                      <DesktopDropdown open={isOpen} items={group.items} />
+                    {group.items || group.regions ? (
+                      <DesktopDropdown
+                        open={isOpen}
+                        items={group.items}
+                        regions={group.regions}
+                      />
                     ) : null}
                   </div>
                 );
@@ -303,7 +395,7 @@ export default function SiteHeader() {
       <div
         className={[
           "overflow-hidden border-b border-[#d9d9d9] bg-white transition-all duration-200 md:hidden",
-          mobileOpen ? "max-h-[40rem] py-4" : "max-h-0 py-0",
+          mobileOpen ? "max-h-[60rem] py-4" : "max-h-0 py-0",
         ].join(" ")}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -322,7 +414,7 @@ export default function SiteHeader() {
                       {group.label}
                     </Link>
 
-                    {group.items ? (
+                    {group.items || group.regions ? (
                       <button
                         type="button"
                         onClick={() =>
@@ -337,23 +429,50 @@ export default function SiteHeader() {
                     ) : null}
                   </div>
 
-                  {group.items && isExpanded ? (
+                  {isExpanded ? (
                     <div className="border-t border-[#e5e5e5] bg-[#fafafa] p-3">
-                      <div className="space-y-2">
-                        {group.items.map((item) => (
-                          <Link
-                            key={item.href + item.label}
-                            href={item.href}
-                            onClick={() => {
-                              setMobileOpen(false);
-                              setMobileSectionOpen(null);
-                            }}
-                            className="block px-3 py-2 text-sm text-[#444]"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
+                      {group.regions ? (
+                        <div className="space-y-4">
+                          {group.regions.map((region) => (
+                            <div key={region.label}>
+                              <div className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#2f6e57]">
+                                {region.label}
+                              </div>
+                              <div className="space-y-2">
+                                {region.items.map((item) => (
+                                  <Link
+                                    key={item.href + item.label}
+                                    href={item.href}
+                                    onClick={() => {
+                                      setMobileOpen(false);
+                                      setMobileSectionOpen(null);
+                                    }}
+                                    className="block px-3 py-2 text-sm text-[#444]"
+                                  >
+                                    {item.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : group.items ? (
+                        <div className="space-y-2">
+                          {group.items.map((item) => (
+                            <Link
+                              key={item.href + item.label}
+                              href={item.href}
+                              onClick={() => {
+                                setMobileOpen(false);
+                                setMobileSectionOpen(null);
+                              }}
+                              className="block px-3 py-2 text-sm text-[#444]"
+                            >
+                              {item.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </div>
