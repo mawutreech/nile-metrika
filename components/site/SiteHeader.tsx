@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type MenuItem = {
   label: string;
@@ -20,15 +20,13 @@ const navGroups: NavGroup[] = [
     href: "/",
   },
   {
-    label: "South Sudan",
-    href: "/country",
+    label: "States & Territories",
+    href: "/states",
     items: [
+      { label: "States Overview", href: "/states" },
       { label: "Country Overview", href: "/country" },
-      { label: "States & Territories", href: "/states" },
-      { label: "Governance", href: "/governance" },
-      { label: "Law & Constitution", href: "/law" },
-      { label: "Society", href: "/society" },
-      { label: "Environment", href: "/environment" },
+      { label: "Census", href: "/census" },
+      { label: "Administrative Structure", href: "/states" },
     ],
   },
   {
@@ -36,20 +34,10 @@ const navGroups: NavGroup[] = [
     href: "/economy",
     items: [
       { label: "Economy", href: "/economy" },
-      { label: "Statistics", href: "/statistics" },
-      { label: "Data", href: "/data" },
-      { label: "Indicators", href: "/indicators" },
-      { label: "Methodology", href: "/methodology" },
+      { label: "Trade", href: "/economy" },
+      { label: "Agriculture", href: "/economy" },
+      { label: "Markets", href: "/economy" },
       { label: "Publications", href: "/publications" },
-    ],
-  },
-  {
-    label: "Politics",
-    href: "/politics",
-    items: [
-      { label: "Politics", href: "/politics" },
-      { label: "Elections", href: "/politics" },
-      { label: "Public Affairs", href: "/politics" },
     ],
   },
   {
@@ -62,12 +50,48 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Culture & Sport",
+    label: "Sports",
     href: "/culture-sport",
     items: [
-      { label: "Culture", href: "/culture-sport" },
-      { label: "Heritage", href: "/culture-sport" },
-      { label: "Sport", href: "/culture-sport" },
+      { label: "Sports", href: "/culture-sport" },
+      { label: "Culture & Sport", href: "/culture-sport" },
+    ],
+  },
+  {
+    label: "Health",
+    href: "/society",
+    items: [
+      { label: "Health", href: "/society" },
+      { label: "Public Health", href: "/society" },
+      { label: "Social Services", href: "/society" },
+    ],
+  },
+  {
+    label: "Education",
+    href: "/society",
+    items: [
+      { label: "Education", href: "/society" },
+      { label: "Schools", href: "/society" },
+      { label: "Human Development", href: "/society" },
+    ],
+  },
+  {
+    label: "Environment",
+    href: "/environment",
+    items: [
+      { label: "Environment", href: "/environment" },
+      { label: "Climate", href: "/environment" },
+      { label: "Land & Resources", href: "/environment" },
+    ],
+  },
+  {
+    label: "Data & Statistics",
+    href: "/statistics",
+    items: [
+      { label: "Statistics", href: "/statistics" },
+      { label: "Data", href: "/data" },
+      { label: "Indicators", href: "/indicators" },
+      { label: "Methodology", href: "/methodology" },
     ],
   },
 ];
@@ -129,7 +153,7 @@ function DesktopDropdown({
   );
 }
 
-export function SiteHeader() {
+export default function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSectionOpen, setMobileSectionOpen] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);

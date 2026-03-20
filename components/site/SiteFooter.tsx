@@ -2,44 +2,36 @@ import Link from "next/link";
 
 const footerGroups = [
   {
-    heading: "Explore",
+    heading: "Navigation",
     links: [
       { label: "Home", href: "/" },
-      { label: "South Sudan", href: "/country" },
+      { label: "States & Territories", href: "/states" },
       { label: "Business", href: "/economy" },
-      { label: "Politics", href: "/politics" },
       { label: "Opinion", href: "/opinion" },
-      { label: "Culture & Sport", href: "/culture-sport" },
     ],
   },
   {
-    heading: "South Sudan",
+    heading: "Public Sections",
     links: [
-      { label: "Country Overview", href: "/country" },
-      { label: "States & Territories", href: "/states" },
-      { label: "Governance", href: "/governance" },
-      { label: "Law & Constitution", href: "/law" },
-      { label: "Society", href: "/society" },
+      { label: "Sports", href: "/culture-sport" },
+      { label: "Health", href: "/society" },
+      { label: "Education", href: "/society" },
       { label: "Environment", href: "/environment" },
     ],
   },
   {
-    heading: "Business & Data",
+    heading: "Evidence",
     links: [
-      { label: "Economy", href: "/economy" },
-      { label: "Statistics", href: "/statistics" },
+      { label: "Data & Statistics", href: "/statistics" },
       { label: "Data", href: "/data" },
       { label: "Indicators", href: "/indicators" },
       { label: "Methodology", href: "/methodology" },
-      { label: "Publications", href: "/publications" },
     ],
   },
   {
-    heading: "Editorial",
+    heading: "Portal",
     links: [
-      { label: "Politics", href: "/politics" },
-      { label: "Opinion", href: "/opinion" },
-      { label: "Culture & Sport", href: "/culture-sport" },
+      { label: "Publications", href: "/publications" },
       { label: "Search", href: "/search" },
       { label: "Login", href: "/login" },
       { label: "Admin", href: "/admin/stories" },
