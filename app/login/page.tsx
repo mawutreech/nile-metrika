@@ -30,7 +30,7 @@ export default function LoginPage() {
     }
 
     setLoading(false);
-    router.push("/admin/stories/new");
+    router.push("/admin/stories");
     router.refresh();
   }
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
     <main className="mx-auto max-w-xl px-4 py-12">
       <h1 className="text-3xl font-semibold">Login</h1>
       <p className="mt-3 text-slate-600">
-        Sign in to create and manage stories.
+        Sign in to manage stories and editorial content.
       </p>
 
       <form onSubmit={handleLogin} className="mt-8 space-y-4">
