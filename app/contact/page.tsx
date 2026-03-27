@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
@@ -9,10 +9,22 @@ export default function ContactPage() {
     subject: "",
     message: "",
   });
+
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
     "idle"
   );
   const [feedback, setFeedback] = useState("");
+
+  useEffect(() => {
+    if (status === "success") {
+      const timer = setTimeout(() => {
+        setStatus("idle");
+        setFeedback("");
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -22,7 +34,9 @@ export default function ContactPage() {
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(form),
       });
 
@@ -55,9 +69,11 @@ export default function ContactPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f7f68]">
             Contact
           </p>
+
           <h1 className="mt-3 text-4xl font-semibold text-[#2f2f2f]">
             Get in touch
           </h1>
+
           <p className="mt-4 text-base leading-8 text-[#555]">
             For editorial inquiries, corrections, partnerships, and general
             questions, contact Nile Metrica.
@@ -91,6 +107,7 @@ export default function ContactPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f7f68]">
             Send a message
           </p>
+
           <form onSubmit={handleSubmit} className="mt-6 space-y-5">
             <div>
               <label className="mb-2 block text-sm font-medium text-[#333]">
@@ -100,7 +117,9 @@ export default function ContactPage() {
                 type="text"
                 required
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((current) => ({ ...current, name: e.target.value }))
+                }
                 className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
               />
             </div>
@@ -113,7 +132,9 @@ export default function ContactPage() {
                 type="email"
                 required
                 value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                onChange={(e) =>
+                  setForm((current) => ({ ...current, email: e.target.value }))
+                }
                 className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
               />
             </div>
@@ -127,7 +148,10 @@ export default function ContactPage() {
                 required
                 value={form.subject}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, subject: e.target.value }))
+                  setForm((current) => ({
+                    ...current,
+                    subject: e.target.value,
+                  }))
                 }
                 className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
               />
@@ -142,7 +166,10 @@ export default function ContactPage() {
                 rows={8}
                 value={form.message}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, message: e.target.value }))
+                  setForm((current) => ({
+                    ...current,
+                    message: e.target.value,
+                  }))
                 }
                 className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
               />
