@@ -148,6 +148,10 @@ const navGroups: NavGroup[] = [
       { label: "Methodology", href: "/methodology" },
     ],
   },
+  {
+    label: "Contact",
+    href: "/contact",
+  },
 ];
 
 function formatToday() {
