@@ -31,7 +31,7 @@ const footerGroups = [
 ];
 
 const socialLinks = [
-  { label: "Facebook", href: "https://facebook.com" },
+  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61576507383518" },
   { label: "X", href: "https://x.com/nilemetrica" },
 ];
 
