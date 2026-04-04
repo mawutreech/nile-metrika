@@ -2,6 +2,43 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import DeleteStoryButton from "@/components/admin/DeleteStoryButton";
 
+function formatSection(section: string | null) {
+  switch (section) {
+    case "news":
+      return "News";
+    case "business-tech":
+      return "Business & Tech";
+    case "opinion":
+      return "Opinion";
+    case "data-stats":
+      return "Data & Stats";
+    case "states-territories":
+      return "States & Territories";
+    default:
+      return section ?? "—";
+  }
+}
+
+function formatStatus(status: string | null) {
+  if (!status) return "—";
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+function formatDate(value: string | null) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleString("en-AU", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default async function AdminStoriesPage() {
   const supabase = createSupabaseServerClient();
 
@@ -22,7 +59,7 @@ export default async function AdminStoriesPage() {
 
         <Link
           href="/admin/stories/new"
-          className="bg-emerald-700 px-5 py-3 font-medium text-white"
+          className="bg-emerald-700 px-5 py-3 font-medium text-white transition hover:bg-emerald-800"
         >
           New story
         </Link>
@@ -49,6 +86,7 @@ export default async function AdminStoriesPage() {
               </th>
             </tr>
           </thead>
+
           <tbody>
             {error ? (
               <tr>
@@ -60,21 +98,26 @@ export default async function AdminStoriesPage() {
               stories.map((story) => (
                 <tr key={story.id} className="border-b last:border-b-0">
                   <td className="px-4 py-4 text-sm text-slate-800">
-                    {story.title}
+                    <div className="font-medium">{story.title}</div>
+                    <div className="mt-1 text-xs text-slate-500">
+                      /stories/{story.slug}
+                    </div>
                   </td>
+
                   <td className="px-4 py-4 text-sm text-slate-600">
-                    {story.section}
+                    {formatSection(story.section)}
                   </td>
+
                   <td className="px-4 py-4 text-sm text-slate-600">
-                    {story.status}
+                    {formatStatus(story.status)}
                   </td>
+
                   <td className="px-4 py-4 text-sm text-slate-600">
                     {story.updated_at
-                      ? new Date(story.updated_at).toLocaleString()
-                      : story.created_at
-                      ? new Date(story.created_at).toLocaleString()
-                      : "-"}
+                      ? formatDate(story.updated_at)
+                      : formatDate(story.created_at)}
                   </td>
+
                   <td className="px-4 py-4 text-sm">
                     <div className="flex flex-wrap gap-4">
                       <Link
