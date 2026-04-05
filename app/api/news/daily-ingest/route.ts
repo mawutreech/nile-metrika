@@ -81,6 +81,33 @@ function labelForRunDate(date: Date) {
   });
 }
 
+function buildQuery(topic: string) {
+  const base = [
+    `"South Sudan"`,
+    `"Juba"`,
+    `"South Sudan government"`,
+    `"South Sudan economy"`,
+    `"South Sudan conflict"`,
+  ];
+
+  const topicMap: Record<string, string[]> = {
+    politics: [`politics`, `"government"`, parliament, president],
+    economy: [`economy`, inflation, market, trade, business],
+    security: [security, conflict, violence, peace],
+    health: [health, hospital, disease, cholera],
+    education: [education, school, university, students],
+    oil: [oil, petroleum, energy, pipeline],
+    diplomacy: [diplomacy, embassy, bilateral, regional],
+    infrastructure: [infrastructure, roads, transport, electricity],
+    agriculture: [agriculture, farming, food, harvest],
+    sport: [sport, football, basketball, tournament],
+  };
+
+  const topicTerms = topicMap[topic] ?? [topic];
+
+  return `${base.join(" OR ")} AND (${topicTerms.join(" OR ")})`;
+}
+
 async function fetchNewsForTopic(topic: string, from: string) {
   const apiKey = process.env.NEWS_API_KEY;
   if (!apiKey) {
@@ -88,11 +115,12 @@ async function fetchNewsForTopic(topic: string, from: string) {
   }
 
   const params = new URLSearchParams({
-    q: `South Sudan ${topic}`,
+    q: buildQuery(topic),
     language: "en",
     sortBy: "publishedAt",
-    pageSize: "15",
+    pageSize: "20",
     from,
+    searchIn: "title,description,content",
     apiKey,
   });
 
@@ -105,7 +133,8 @@ async function fetchNewsForTopic(topic: string, from: string) {
   );
 
   if (!response.ok) {
-    throw new Error(`News fetch failed for ${topic}: ${response.status}`);
+    const text = await response.text();
+    throw new Error(`News fetch failed for ${topic}: ${response.status} ${text}`);
   }
 
   const json = await response.json();
@@ -184,7 +213,7 @@ export async function POST(req: NextRequest) {
   const openai = new OpenAI({ apiKey: openaiApiKey });
 
   const today = new Date();
-  const from = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const from = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const topicBuckets = [
     "politics",
@@ -222,17 +251,17 @@ export async function POST(req: NextRequest) {
       candidates.push(...articles.map((article) => ({ ...article, topic })));
     }
 
-    console.log("total fetched before dedupe:", candidates.length);
-
     candidates = dedupeByUrl(candidates)
-      .filter((article) => article.title && article.url && article.source?.name)
+      .filter(
+        (article) =>
+          article.title &&
+          article.url &&
+          article.source?.name &&
+          !article.title.toLowerCase().includes("[removed]")
+      )
       .slice(0, 40);
 
-    console.log("after dedupe/filter:", candidates.length);
-
     const picked = candidates.slice(0, 5);
-
-    console.log("picked for generation:", picked.length);
 
     for (const article of picked) {
       const draft = await generateEditorialDraft(openai, article, article.topic);
@@ -246,11 +275,20 @@ export async function POST(req: NextRequest) {
 
       const section: StorySection = draft.section ?? fallbackSection;
 
+      const slugBase = (draft.headline ?? article.title)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .slice(0, 80);
+
+      const slug = `${slugBase}-${Date.now()}`;
+
       const storyInsert = await supabase
         .from("stories")
         .insert({
           title: draft.headline ?? article.title,
-          slug: crypto.randomUUID(),
+          slug,
           excerpt: draft.excerpt ?? article.description ?? "",
           content: draft.summary ?? "",
           section,
