@@ -73,8 +73,12 @@ function dedupeByUrl<T extends { url: string }>(articles: T[]): T[] {
   });
 }
 
-function weekdayName(date: Date) {
-  return date.toLocaleDateString("en-US", { weekday: "long" });
+function labelForRunDate(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 async function fetchNewsForTopic(topic: string, from: string) {
@@ -180,12 +184,6 @@ export async function POST(req: NextRequest) {
   const openai = new OpenAI({ apiKey: openaiApiKey });
 
   const today = new Date();
-  const day = today.getDay();
-
-  if (day === 0 || day === 6) {
-    return NextResponse.json({ ok: true, skipped: "Weekend" });
-  }
-
   const from = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const topicBuckets = [
@@ -246,7 +244,7 @@ export async function POST(req: NextRequest) {
           excerpt: draft.excerpt ?? article.description ?? "",
           content: draft.summary ?? "",
           section,
-          category: draft.category ?? weekdayName(today),
+          category: draft.category ?? labelForRunDate(today),
           status: "draft",
           ai_generated: true,
           ai_confidence: draft.confidence ?? 0.5,
