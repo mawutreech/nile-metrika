@@ -91,16 +91,16 @@ function buildQuery(topic: string) {
   ];
 
   const topicMap: Record<string, string[]> = {
-    politics: [`politics`, `"government"`, parliament, president],
-    economy: [`economy`, inflation, market, trade, business],
-    security: [security, conflict, violence, peace],
-    health: [health, hospital, disease, cholera],
-    education: [education, school, university, students],
-    oil: [oil, petroleum, energy, pipeline],
-    diplomacy: [diplomacy, embassy, bilateral, regional],
-    infrastructure: [infrastructure, roads, transport, electricity],
-    agriculture: [agriculture, farming, food, harvest],
-    sport: [sport, football, basketball, tournament],
+    politics: ["politics", `"government"`, "parliament", "president"],
+    economy: ["economy", "inflation", "market", "trade", "business"],
+    security: ["security", "conflict", "violence", "peace"],
+    health: ["health", "hospital", "disease", "cholera"],
+    education: ["education", "school", "university", "students"],
+    oil: ["oil", "petroleum", "energy", "pipeline"],
+    diplomacy: ["diplomacy", "embassy", "bilateral", "regional"],
+    infrastructure: ["infrastructure", "roads", "transport", "electricity"],
+    agriculture: ["agriculture", "farming", "food", "harvest"],
+    sport: ["sport", "football", "basketball", "tournament"],
   };
 
   const topicTerms = topicMap[topic] ?? [topic];
