@@ -17,11 +17,24 @@ const SECTION_OPTIONS = [
   { label: "Data & Statistics", value: "data-statistics" },
 ];
 
+type StoryFormState = {
+  title: string;
+  slug: string;
+  excerpt: string;
+  section: string;
+  category: string;
+  status: "draft" | "published";
+  body_html: string;
+  featured_image_url: string;
+  seo_title: string;
+  seo_description: string;
+};
+
 export default function NewStoryPage() {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<StoryFormState>({
     title: "",
     slug: "",
     excerpt: "",
@@ -74,42 +87,60 @@ export default function NewStoryPage() {
     try {
       const {
         data: { user },
+        error: userError,
       } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw new Error(userError.message);
+      }
 
       if (!user) {
         throw new Error("You must be logged in.");
       }
 
+      const title = form.title.trim();
+      const slug = form.slug.trim();
+      const bodyHtml = form.body_html?.trim() || "<p></p>";
+
+      if (!title || !slug || !bodyHtml) {
+        throw new Error("Title, slug, and story body are required.");
+      }
+
       const payload = {
-        title: form.title.trim(),
-        slug: form.slug.trim(),
+        title,
+        slug,
         excerpt: form.excerpt.trim() || null,
+        body_html: bodyHtml,
+        featured_image_url: form.featured_image_url.trim() || null,
         section: form.section,
         category: form.category.trim() || null,
         status: form.status,
-        body_html: form.body_html,
-        featured_image_url: form.featured_image_url.trim() || null,
+        author_id: user.id,
+        reading_time: Math.max(1, Number(readingTime) || 1),
+        published_at: form.status === "published" ? new Date().toISOString() : null,
         seo_title: form.seo_title.trim() || null,
         seo_description: form.seo_description.trim() || null,
-        reading_time: readingTime,
-        author_id: user.id,
-        published_at: form.status === "published" ? new Date().toISOString() : null,
+        ai_generated: false,
+        editor_status: form.status === "published" ? "approved" : "draft",
+        source_url: null,
+        source_name: null,
+        source_published_at: null,
+        why_it_matters: null,
+        review_notes: null,
       };
-
-      if (!payload.title || !payload.slug || !payload.body_html) {
-        throw new Error("Title, slug, and story body are required.");
-      }
 
       const { error } = await supabase.from("stories").insert(payload);
 
       if (error) {
-        throw error;
+        console.error("Create story error:", error);
+        throw new Error(error.message || "Unable to save story.");
       }
 
       setFeedback("Story saved successfully.");
       router.push("/admin/stories");
       router.refresh();
     } catch (error) {
+      console.error(error);
       setFeedback(error instanceof Error ? error.message : "Unable to save story.");
     } finally {
       setSaving(false);
@@ -119,7 +150,7 @@ export default function NewStoryPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <div className="max-w-3xl">
-        <h1 className="text-5xl font-semibold tracking-tight text-[#2f2f2f]">
+        <h1 className="text-3xl font-semibold tracking-tight text-[#2f2f2f]">
           New story
         </h1>
         <p className="mt-4 text-lg text-[#555]">
@@ -130,9 +161,7 @@ export default function NewStoryPage() {
       <form onSubmit={handleSubmit} className="mt-10 space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">
-              Title
-            </label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">Title</label>
             <input
               name="title"
               value={form.title}
@@ -143,9 +172,7 @@ export default function NewStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">
-              Slug
-            </label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">Slug</label>
             <input
               name="slug"
               value={form.slug}
@@ -157,9 +184,7 @@ export default function NewStoryPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-[#333]">
-            Excerpt
-          </label>
+          <label className="mb-2 block text-sm font-medium text-[#333]">Excerpt</label>
           <textarea
             name="excerpt"
             rows={4}
@@ -171,9 +196,7 @@ export default function NewStoryPage() {
 
         <div className="grid gap-6 md:grid-cols-3">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">
-              Section
-            </label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">Section</label>
             <select
               name="section"
               value={form.section}
@@ -189,9 +212,7 @@ export default function NewStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">
-              Category
-            </label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">Category</label>
             <input
               name="category"
               value={form.category}
@@ -201,9 +222,7 @@ export default function NewStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">
-              Status
-            </label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">Status</label>
             <select
               name="status"
               value={form.status}
@@ -217,12 +236,10 @@ export default function NewStoryPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-[#333]">
-            Story body
-          </label>
+          <label className="mb-2 block text-sm font-medium text-[#333]">Story body</label>
           <StoryEditor
             value={form.body_html}
-            onChange={(value) =>
+            onChange={(value: string) =>
               setForm((current) => ({
                 ...current,
                 body_html: value,
@@ -246,9 +263,7 @@ export default function NewStoryPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">
-              SEO title
-            </label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">SEO title</label>
             <input
               name="seo_title"
               value={form.seo_title}
@@ -279,9 +294,7 @@ export default function NewStoryPage() {
             {saving ? "Saving..." : "Save story"}
           </button>
 
-          {feedback ? (
-            <p className="text-sm text-[#555]">{feedback}</p>
-          ) : null}
+          {feedback ? <p className="text-sm text-[#555]">{feedback}</p> : null}
         </div>
       </form>
     </main>
