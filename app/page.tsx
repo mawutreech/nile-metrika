@@ -90,8 +90,7 @@ function StoryCard({
   story: Story;
   author?: Author | null;
 }) {
-  const authorName =
-    author?.display_name || author?.full_name || "Editor";
+  const authorName = author?.display_name || author?.full_name || "Editor";
   const authorRole = author?.role || "Contributor at Nile Metrica";
   const authorAvatar = author?.avatar_url || null;
 
@@ -113,27 +112,27 @@ function StoryCard({
           </div>
         </Link>
       ) : showAuthorFallback ? (
-        <div className="flex min-h-[240px] items-center bg-[#eef3f6] p-6">
-          <div className="flex items-center gap-4">
+        <div className="flex min-h-[148px] items-center bg-[#eef3f6] px-5 py-4">
+          <div className="flex items-center gap-3">
             {authorAvatar ? (
               <img
                 src={authorAvatar}
                 alt={authorName}
-                className="h-16 w-16 rounded-full object-cover"
+                className="h-12 w-12 rounded-full object-cover"
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#d7dfe5] text-2xl font-semibold text-[#223]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#d7dfe5] text-lg font-semibold text-[#223]">
                 {authorName.charAt(0).toUpperCase()}
               </div>
             )}
 
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#3f5a5a]">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#3f5a5a]">
                 By {authorName}
               </p>
               <p className="mt-1 text-sm text-slate-600">{authorRole}</p>
               {(story.published_at || story.reading_time) && (
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-500">
                   {story.published_at ? formatDate(story.published_at) : ""}
                   {story.published_at && story.reading_time ? " · " : ""}
                   {story.reading_time ? `${story.reading_time} min read` : ""}
@@ -143,24 +142,26 @@ function StoryCard({
           </div>
         </div>
       ) : (
-        <div className="flex min-h-[240px] items-center justify-center bg-[#f3f3f3] text-sm text-slate-500">
+        <div className="flex min-h-[180px] items-center justify-center bg-[#f3f3f3] text-sm text-slate-500">
           No image available
         </div>
       )}
 
-      <div className="p-6">
+      <div className="p-5">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#3f7f68]">
           {labelForStory(story)}
         </p>
 
-        <h2 className="mt-3 text-2xl font-semibold leading-tight text-[#2f2f2f]">
+        <h2 className="mt-3 text-[2rem] font-semibold leading-[1.08] tracking-tight text-[#2f2f2f]">
           <Link href={`/stories/${story.slug}`} className="hover:underline">
             {story.title}
           </Link>
         </h2>
 
         {story.excerpt ? (
-          <p className="mt-3 text-sm leading-7 text-[#555]">{story.excerpt}</p>
+          <p className="mt-3 line-clamp-5 text-sm leading-7 text-[#555]">
+            {story.excerpt}
+          </p>
         ) : null}
 
         <Link
@@ -235,8 +236,7 @@ export default async function HomePage() {
 
   const { data } = await supabase
     .from("stories")
-    .select(
-      `
+    .select(`
       id,
       title,
       slug,
@@ -247,8 +247,7 @@ export default async function HomePage() {
       published_at,
       reading_time,
       author_id
-    `
-    )
+    `)
     .eq("status", "published")
     .order("published_at", { ascending: false })
     .limit(30);
