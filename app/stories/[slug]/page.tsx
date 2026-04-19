@@ -32,7 +32,7 @@ type StoryRow = {
   published_at: string | null;
   reading_time: number | null;
   author_id: string | null;
-  authors: StoryAuthor | StoryAuthor[] | null;
+  author: StoryAuthor | null;
 };
 
 function formatDate(dateString: string | null) {
@@ -71,12 +71,6 @@ function labelForStory(story: Pick<StoryRow, "section" | "category">) {
   }
 }
 
-function getAuthor(authors: StoryRow["authors"]): StoryAuthor | null {
-  if (!authors) return null;
-  if (Array.isArray(authors)) return authors[0] ?? null;
-  return authors;
-}
-
 export default async function StoryPage({
   params,
 }: {
@@ -87,8 +81,7 @@ export default async function StoryPage({
 
   const { data, error } = await supabase
     .from("stories")
-    .select(
-      `
+    .select(`
       id,
       title,
       slug,
@@ -100,7 +93,7 @@ export default async function StoryPage({
       published_at,
       reading_time,
       author_id,
-      authors (
+      author:authors!stories_author_id_fkey (
         id,
         display_name,
         full_name,
@@ -108,8 +101,7 @@ export default async function StoryPage({
         bio,
         avatar_url
       )
-    `
-    )
+    `)
     .eq("slug", slug)
     .eq("status", "published")
     .single();
@@ -120,12 +112,17 @@ export default async function StoryPage({
 
   const story = data as StoryRow;
   const storyLabel = labelForStory(story);
-  const author = getAuthor(story.authors);
 
-  const authorName = author?.display_name || author?.full_name || "Editor";
-  const authorRole = author?.role || "Contributor at Nile Metrica";
-  const authorBio = author?.bio || "Contributor at Nile Metrica";
-  const authorAvatar = author?.avatar_url || null;
+  const authorName =
+    story.author?.display_name || story.author?.full_name || "Editor";
+
+  const authorRole =
+    story.author?.role || "Contributor at Nile Metrica";
+
+  const authorBio =
+    story.author?.bio || "";
+
+  const authorAvatar = story.author?.avatar_url || null;
   const publishedDate = formatDate(story.published_at);
   const readingTime = story.reading_time ?? 1;
 
