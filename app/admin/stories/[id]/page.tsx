@@ -22,6 +22,7 @@ type AuthorOption = {
   id: string;
   display_name: string | null;
   full_name: string | null;
+  role: string | null;
 };
 
 export default function EditStoryPage() {
@@ -56,8 +57,8 @@ export default function EditStoryPage() {
       const [{ data: authorData }, { data: storyData, error: storyError }] =
         await Promise.all([
           supabase
-            .from("profiles")
-            .select("id, display_name, full_name")
+            .from("authors")
+            .select("id, display_name, full_name, role")
             .order("display_name", { ascending: true }),
           supabase
             .from("stories")
@@ -68,7 +69,9 @@ export default function EditStoryPage() {
             .single(),
         ]);
 
-      if (authorData) setAuthors(authorData);
+      if (authorData) {
+        setAuthors(authorData);
+      }
 
       if (storyError || !storyData) {
         setFeedback(storyError?.message || "Story not found.");
@@ -176,7 +179,9 @@ export default function EditStoryPage() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
       <div className="max-w-3xl">
-        <h1 className="text-5xl font-semibold tracking-tight text-[#2f2f2f]">Edit story</h1>
+        <h1 className="text-5xl font-semibold tracking-tight text-[#2f2f2f]">
+          Edit story
+        </h1>
         <p className="mt-4 text-lg text-[#555]">
           Update story content, author details, and publishing status.
         </p>
@@ -185,7 +190,9 @@ export default function EditStoryPage() {
       <form onSubmit={handleSubmit} className="mt-10 space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">Title</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              Title
+            </label>
             <input
               name="title"
               value={form.title}
@@ -196,7 +203,9 @@ export default function EditStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">Slug</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              Slug
+            </label>
             <input
               name="slug"
               value={form.slug}
@@ -208,7 +217,9 @@ export default function EditStoryPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-[#333]">Excerpt</label>
+          <label className="mb-2 block text-sm font-medium text-[#333]">
+            Excerpt
+          </label>
           <textarea
             name="excerpt"
             rows={4}
@@ -220,7 +231,9 @@ export default function EditStoryPage() {
 
         <div className="grid gap-6 md:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">Section</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              Section
+            </label>
             <select
               name="section"
               value={form.section}
@@ -236,7 +249,9 @@ export default function EditStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">Category</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              Category
+            </label>
             <input
               name="category"
               value={form.category}
@@ -246,7 +261,9 @@ export default function EditStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">Status</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              Status
+            </label>
             <select
               name="status"
               value={form.status}
@@ -259,24 +276,33 @@ export default function EditStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">Author</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              Author
+            </label>
             <select
               name="author_id"
               value={form.author_id}
               onChange={handleChange}
               className="w-full border border-[#d8d8d8] px-4 py-3"
             >
-              {authors.map((author) => (
-                <option key={author.id} value={author.id}>
-                  {author.display_name || author.full_name || "Unnamed author"}
-                </option>
-              ))}
+              {authors.length === 0 ? (
+                <option value="">No authors found</option>
+              ) : (
+                authors.map((author) => (
+                  <option key={author.id} value={author.id}>
+                    {author.display_name || author.full_name || "Unnamed author"}
+                    {author.role ? ` — ${author.role}` : ""}
+                  </option>
+                ))
+              )}
             </select>
           </div>
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-[#333]">Story body</label>
+          <label className="mb-2 block text-sm font-medium text-[#333]">
+            Story body
+          </label>
           <StoryEditor
             value={form.body_html}
             onChange={(value) =>
@@ -290,7 +316,9 @@ export default function EditStoryPage() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-[#333]">Featured image URL</label>
+          <label className="mb-2 block text-sm font-medium text-[#333]">
+            Featured image URL
+          </label>
           <input
             name="featured_image_url"
             value={form.featured_image_url}
@@ -301,7 +329,9 @@ export default function EditStoryPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">SEO title</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              SEO title
+            </label>
             <input
               name="seo_title"
               value={form.seo_title}
@@ -311,7 +341,9 @@ export default function EditStoryPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-[#333]">SEO description</label>
+            <label className="mb-2 block text-sm font-medium text-[#333]">
+              SEO description
+            </label>
             <input
               name="seo_description"
               value={form.seo_description}

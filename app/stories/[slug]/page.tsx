@@ -18,10 +18,12 @@ type Story = {
 
 type Author = {
   id: string;
+  full_name: string | null;
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
   role: string | null;
+  email: string | null;
 };
 
 function formatDate(dateString: string | null) {
@@ -63,13 +65,19 @@ export default async function StoryPage({
 
   if (story.author_id) {
     const { data: authorData } = await supabase
-      .from("profiles")
-      .select("id, display_name, bio, avatar_url, role")
+      .from("authors")
+      .select("id, full_name, display_name, bio, avatar_url, role, email")
       .eq("id", story.author_id)
       .single();
 
     author = authorData;
   }
+
+  const authorName =
+    author?.display_name || author?.full_name || "Editor";
+
+  const authorBio =
+    author?.bio || `${author?.role || "Contributor"} at Nile Metrica`;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
@@ -87,12 +95,12 @@ export default async function StoryPage({
             {author?.avatar_url ? (
               <img
                 src={author.avatar_url}
-                alt={author.display_name || "Author"}
+                alt={authorName}
                 className="h-20 w-20 rounded-full object-cover"
               />
             ) : (
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#dfe5ea] text-3xl font-semibold text-[#334]">
-                {(author?.display_name || "E").charAt(0).toUpperCase()}
+                {authorName.charAt(0).toUpperCase()}
               </div>
             )}
 
@@ -101,11 +109,9 @@ export default async function StoryPage({
                 Author
               </p>
               <h2 className="mt-1 text-3xl font-semibold text-[#2f2f2f]">
-                {author?.display_name || "Editor"}
+                {authorName}
               </h2>
-              <p className="mt-2 text-base text-[#555]">
-                {author?.bio || `${author?.role || "Contributor"} at Nile Metrica`}
-              </p>
+              <p className="mt-2 text-base text-[#555]">{authorBio}</p>
             </div>
           </div>
         </div>

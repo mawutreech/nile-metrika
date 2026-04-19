@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type Profile = {
+type Author = {
   id: string;
   full_name: string | null;
   display_name: string | null;
@@ -13,7 +13,7 @@ type Profile = {
   email: string | null;
 };
 
-type ProfileForm = {
+type AuthorForm = {
   full_name: string;
   display_name: string;
   bio: string;
@@ -22,7 +22,7 @@ type ProfileForm = {
   email: string;
 };
 
-const emptyForm: ProfileForm = {
+const emptyForm: AuthorForm = {
   full_name: "",
   display_name: "",
   bio: "",
@@ -34,30 +34,32 @@ const emptyForm: ProfileForm = {
 export default function AdminProfilesPage() {
   const supabase = createSupabaseBrowserClient();
 
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [form, setForm] = useState<ProfileForm>(emptyForm);
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [form, setForm] = useState<AuthorForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState("");
 
-  async function loadProfiles() {
+  async function loadAuthors() {
     setLoading(true);
+
     const { data, error } = await supabase
-      .from("profiles")
+      .from("authors")
       .select("id, full_name, display_name, bio, avatar_url, role, email")
       .order("display_name", { ascending: true });
 
     if (error) {
       setFeedback(error.message);
     } else {
-      setProfiles(data ?? []);
+      setAuthors(data ?? []);
     }
+
     setLoading(false);
   }
 
   useEffect(() => {
-    loadProfiles();
+    loadAuthors();
   }, []);
 
   function handleChange(
@@ -70,15 +72,15 @@ export default function AdminProfilesPage() {
     }));
   }
 
-  function startEdit(profile: Profile) {
-    setEditingId(profile.id);
+  function startEdit(author: Author) {
+    setEditingId(author.id);
     setForm({
-      full_name: profile.full_name ?? "",
-      display_name: profile.display_name ?? "",
-      bio: profile.bio ?? "",
-      avatar_url: profile.avatar_url ?? "",
-      role: profile.role ?? "",
-      email: profile.email ?? "",
+      full_name: author.full_name ?? "",
+      display_name: author.display_name ?? "",
+      bio: author.bio ?? "",
+      avatar_url: author.avatar_url ?? "",
+      role: author.role ?? "",
+      email: author.email ?? "",
     });
     setFeedback("");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -98,7 +100,7 @@ export default function AdminProfilesPage() {
     try {
       const payload = {
         full_name: form.full_name.trim() || null,
-        display_name: form.display_name.trim() || form.full_name.trim() || null,
+        display_name: form.display_name.trim() || form.full_name.trim(),
         bio: form.bio.trim() || null,
         avatar_url: form.avatar_url.trim() || null,
         role: form.role.trim() || null,
@@ -111,20 +113,20 @@ export default function AdminProfilesPage() {
 
       if (editingId) {
         const { error } = await supabase
-          .from("profiles")
+          .from("authors")
           .update(payload)
           .eq("id", editingId);
 
         if (error) throw error;
-        setFeedback("Author profile updated.");
+        setFeedback("Author updated.");
       } else {
-        const { error } = await supabase.from("profiles").insert(payload);
+        const { error } = await supabase.from("authors").insert(payload);
         if (error) throw error;
-        setFeedback("Author profile created.");
+        setFeedback("Author created.");
       }
 
       resetForm();
-      await loadProfiles();
+      await loadAuthors();
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Unable to save profile.");
     } finally {
@@ -176,7 +178,6 @@ export default function AdminProfilesPage() {
                 name="role"
                 value={form.role}
                 onChange={handleChange}
-                placeholder="Columnist, Guest Contributor, Policy Analyst..."
                 className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
               />
             </div>
@@ -246,28 +247,28 @@ export default function AdminProfilesPage() {
           <h2 className="text-2xl font-semibold text-[#2f2f2f]">Existing authors</h2>
 
           {loading ? (
-            <p className="mt-6 text-sm text-slate-500">Loading profiles...</p>
-          ) : profiles.length === 0 ? (
+            <p className="mt-6 text-sm text-slate-500">Loading authors...</p>
+          ) : authors.length === 0 ? (
             <div className="mt-6 border border-[#d8d8d8] bg-white p-5 text-sm text-slate-600">
               No author profiles yet.
             </div>
           ) : (
             <div className="mt-6 space-y-4">
-              {profiles.map((profile) => (
+              {authors.map((author) => (
                 <div
-                  key={profile.id}
+                  key={author.id}
                   className="flex items-start justify-between gap-4 border border-[#d8d8d8] bg-white p-5"
                 >
                   <div className="flex gap-4">
-                    {profile.avatar_url ? (
+                    {author.avatar_url ? (
                       <img
-                        src={profile.avatar_url}
-                        alt={profile.display_name ?? "Author"}
+                        src={author.avatar_url}
+                        alt={author.display_name ?? "Author"}
                         className="h-16 w-16 rounded-full object-cover"
                       />
                     ) : (
                       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#dfe5ea] text-xl font-semibold text-[#334]">
-                        {(profile.display_name || profile.full_name || "A")
+                        {(author.display_name || author.full_name || "A")
                           .charAt(0)
                           .toUpperCase()}
                       </div>
@@ -275,23 +276,23 @@ export default function AdminProfilesPage() {
 
                     <div>
                       <h3 className="text-lg font-semibold text-[#2f2f2f]">
-                        {profile.display_name || profile.full_name || "Unnamed author"}
+                        {author.display_name || author.full_name || "Unnamed author"}
                       </h3>
                       <p className="mt-1 text-sm text-slate-500">
-                        {profile.role || "Contributor"}
+                        {author.role || "Contributor"}
                       </p>
-                      {profile.email ? (
-                        <p className="mt-1 text-sm text-slate-500">{profile.email}</p>
+                      {author.email ? (
+                        <p className="mt-1 text-sm text-slate-500">{author.email}</p>
                       ) : null}
-                      {profile.bio ? (
-                        <p className="mt-2 max-w-2xl text-sm text-[#555]">{profile.bio}</p>
+                      {author.bio ? (
+                        <p className="mt-2 max-w-2xl text-sm text-[#555]">{author.bio}</p>
                       ) : null}
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    onClick={() => startEdit(profile)}
+                    onClick={() => startEdit(author)}
                     className="text-sm font-medium text-[#2f6e57] hover:underline"
                   >
                     Edit
