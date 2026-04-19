@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Playfair_Display } from "next/font/google";
@@ -38,7 +39,7 @@ function formatDate(dateString: string | null) {
   if (!dateString) return "";
   return new Date(dateString).toLocaleDateString("en-AU", {
     day: "numeric",
-    month: "numeric",
+    month: "long",
     year: "numeric",
   });
 }
@@ -68,6 +69,14 @@ function labelForStory(story: { section: string; category: string | null }) {
     default:
       return "Story";
   }
+}
+
+function getBaseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    "https://nilemetrica.com"
+  );
 }
 
 export default async function StoryPage({
@@ -126,6 +135,26 @@ export default async function StoryPage({
   const authorAvatar = author?.avatar_url || null;
   const publishedDate = formatDate(story.published_at);
   const readingTime = story.reading_time ?? 1;
+  const isOpinion = story.section === "opinion";
+
+  const storyUrl = `${getBaseUrl()}/stories/${story.slug}`;
+  const shareText = `${story.title} — Nile Metrica`;
+
+  const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    shareText
+  )}&url=${encodeURIComponent(storyUrl)}`;
+
+  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+    storyUrl
+  )}`;
+
+  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+    storyUrl
+  )}`;
+
+  const mailShareUrl = `mailto:?subject=${encodeURIComponent(
+    story.title
+  )}&body=${encodeURIComponent(`${shareText}\n\n${storyUrl}`)}`;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -140,13 +169,21 @@ export default async function StoryPage({
           {story.title}
         </h1>
 
-        <div className="mt-10 border border-[#e5e5e5] bg-white p-6">
-          <div className="flex items-center gap-4">
+        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-slate-600">
+          {publishedDate ? <span>{publishedDate}</span> : null}
+          <span>{readingTime} min read</span>
+        </div>
+
+        <div className="mt-8 border border-[#e5e5e5] bg-white p-6">
+          <div className="flex items-start gap-4">
             {authorAvatar ? (
-              <img
+              <Image
                 src={authorAvatar}
                 alt={authorName}
+                width={80}
+                height={80}
                 className="h-20 w-20 rounded-full object-cover"
+                unoptimized
               />
             ) : (
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#dfe5ea] text-3xl font-semibold text-[#223]">
@@ -154,7 +191,7 @@ export default async function StoryPage({
               </div>
             )}
 
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f5a5a]">
                 Author
               </p>
@@ -163,7 +200,9 @@ export default async function StoryPage({
               </h2>
               <p className="mt-1 text-base text-slate-600">{authorRole}</p>
               {authorBio ? (
-                <p className="mt-2 text-sm text-slate-500">{authorBio}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                  {authorBio}
+                </p>
               ) : null}
             </div>
           </div>
@@ -178,12 +217,7 @@ export default async function StoryPage({
           </p>
         ) : null}
 
-        <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-slate-600">
-          {publishedDate ? <span>{publishedDate}</span> : null}
-          <span>{readingTime} min read</span>
-        </div>
-
-        {story.featured_image_url ? (
+        {!isOpinion && story.featured_image_url ? (
           <div className="mt-10 overflow-hidden border border-[#e5e5e5] bg-[#f8f8f8]">
             <div className="relative aspect-[16/9] w-full">
               <Image
@@ -202,6 +236,48 @@ export default async function StoryPage({
           style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
           dangerouslySetInnerHTML={{ __html: story.body_html }}
         />
+
+        <div className="mt-14 border-t border-[#e5e5e5] pt-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f5a5a]">
+            Share this article
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link
+              href={xShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
+            >
+              Share on X
+            </Link>
+
+            <Link
+              href={facebookShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
+            >
+              Share on Facebook
+            </Link>
+
+            <Link
+              href={linkedinShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
+            >
+              Share on LinkedIn
+            </Link>
+
+            <Link
+              href={mailShareUrl}
+              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
+            >
+              Share by Email
+            </Link>
+          </div>
+        </div>
       </article>
     </main>
   );
