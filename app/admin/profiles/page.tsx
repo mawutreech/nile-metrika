@@ -31,6 +31,11 @@ const emptyForm: AuthorForm = {
   email: "",
 };
 
+function fileExtension(file: File) {
+  const parts = file.name.split(".");
+  return parts.length > 1 ? parts.pop()!.toLowerCase() : "jpg";
+}
+
 export default function AdminProfilesPage() {
   const supabase = createSupabaseBrowserClient();
 
@@ -39,6 +44,7 @@ export default function AdminProfilesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [feedback, setFeedback] = useState("");
 
   async function loadAuthors() {
@@ -70,6 +76,67 @@ export default function AdminProfilesPage() {
       ...current,
       [name]: value,
     }));
+  }
+
+  async function handleAvatarUpload(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setFeedback("");
+
+    try {
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Please upload an image file.");
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error("Image must be 5MB or smaller.");
+      }
+
+      const ext = fileExtension(file);
+      const safeName = (
+        form.display_name ||
+        form.full_name ||
+        "author"
+      )
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+      const path = `${safeName || "author"}/${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("author-avatars")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: file.type,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("author-avatars").getPublicUrl(path);
+
+      setForm((current) => ({
+        ...current,
+        avatar_url: publicUrl,
+      }));
+
+      setFeedback("Avatar uploaded.");
+    } catch (error) {
+      setFeedback(
+        error instanceof Error ? error.message : "Unable to upload avatar."
+      );
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
   }
 
   function startEdit(author: Author) {
@@ -196,6 +263,21 @@ export default function AdminProfilesPage() {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-[#333]">
+                Avatar upload
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
+              />
+              <p className="mt-2 text-xs text-slate-500">
+                Upload a JPG, PNG, or WebP image up to 5MB.
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-[#333]">
                 Avatar URL
               </label>
               <input
@@ -205,6 +287,19 @@ export default function AdminProfilesPage() {
                 className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
               />
             </div>
+
+            {form.avatar_url ? (
+              <div>
+                <label className="mb-2 block text-sm font-medium text-[#333]">
+                  Preview
+                </label>
+                <img
+                  src={form.avatar_url}
+                  alt={form.display_name || form.full_name || "Author"}
+                  className="h-24 w-24 rounded-full object-cover border border-[#d8d8d8]"
+                />
+              </div>
+            ) : null}
 
             <div>
               <label className="mb-2 block text-sm font-medium text-[#333]">
@@ -222,10 +317,16 @@ export default function AdminProfilesPage() {
             <div className="flex items-center gap-4">
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || uploading}
                 className="bg-[#2f6e57] px-6 py-3 text-sm font-semibold text-white disabled:opacity-60"
               >
-                {saving ? "Saving..." : editingId ? "Update profile" : "Create profile"}
+                {uploading
+                  ? "Uploading..."
+                  : saving
+                  ? "Saving..."
+                  : editingId
+                  ? "Update profile"
+                  : "Create profile"}
               </button>
 
               {editingId ? (
@@ -244,7 +345,9 @@ export default function AdminProfilesPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-semibold text-[#2f2f2f]">Existing authors</h2>
+          <h2 className="text-2xl font-semibold text-[#2f2f2f]">
+            Existing authors
+          </h2>
 
           {loading ? (
             <p className="mt-6 text-sm text-slate-500">Loading authors...</p>
@@ -285,7 +388,9 @@ export default function AdminProfilesPage() {
                         <p className="mt-1 text-sm text-slate-500">{author.email}</p>
                       ) : null}
                       {author.bio ? (
-                        <p className="mt-2 max-w-2xl text-sm text-[#555]">{author.bio}</p>
+                        <p className="mt-2 max-w-2xl text-sm text-[#555]">
+                          {author.bio}
+                        </p>
                       ) : null}
                     </div>
                   </div>
