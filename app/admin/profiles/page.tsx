@@ -37,7 +37,7 @@ function fileExtension(file: File) {
 }
 
 export default function AdminProfilesPage() {
-  const supabase = createSupabaseBrowserClient();
+  const [supabase] = useState(() => createSupabaseBrowserClient());
 
   const [authors, setAuthors] = useState<Author[]>([]);
   const [form, setForm] = useState<AuthorForm>(emptyForm);
@@ -65,7 +65,32 @@ export default function AdminProfilesPage() {
   }
 
   useEffect(() => {
-    loadAuthors();
+    let active = true;
+
+    async function run() {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from("authors")
+        .select("id, full_name, display_name, bio, avatar_url, role, email")
+        .order("display_name", { ascending: true });
+
+      if (!active) return;
+
+      if (error) {
+        setFeedback(`Load failed: ${error.message}`);
+      } else {
+        setAuthors(data ?? []);
+      }
+
+      setLoading(false);
+    }
+
+    run();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   function handleChange(
