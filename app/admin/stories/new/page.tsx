@@ -27,7 +27,9 @@ type AuthorOption = {
 
 export default function NewStoryPage() {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
+
+  // Create once only
+  const [supabase] = useState(() => createSupabaseBrowserClient());
 
   const [authors, setAuthors] = useState<AuthorOption[]>([]);
   const [loadingAuthors, setLoadingAuthors] = useState(true);
@@ -49,6 +51,8 @@ export default function NewStoryPage() {
   });
 
   useEffect(() => {
+    let active = true;
+
     async function loadAuthors() {
       setLoadingAuthors(true);
       setFeedback("");
@@ -58,15 +62,17 @@ export default function NewStoryPage() {
         .select("id, display_name, full_name, role")
         .order("display_name", { ascending: true });
 
+      if (!active) return;
+
       if (error) {
         setFeedback(`Failed to load authors: ${error.message}`);
       } else {
-        const authorRows = data ?? [];
-        setAuthors(authorRows);
+        const rows = data ?? [];
+        setAuthors(rows);
 
         setForm((current) => ({
           ...current,
-          author_id: current.author_id || authorRows[0]?.id || "",
+          author_id: current.author_id || rows[0]?.id || "",
         }));
       }
 
@@ -74,7 +80,11 @@ export default function NewStoryPage() {
     }
 
     loadAuthors();
-  }, [supabase]);
+
+    return () => {
+      active = false;
+    };
+  }, []); // important: empty dependency array
 
   const readingTime = useMemo(() => {
     const plainText = form.body_html.replace(/<[^>]+>/g, " ").trim();
@@ -132,31 +142,27 @@ export default function NewStoryPage() {
         throw new Error("Title, slug, and story body are required.");
       }
 
-      console.log("Saving story payload:", payload);
-
       const { data, error } = await supabase
         .from("stories")
         .insert(payload)
-        .select("id, title, slug, status")
+        .select("id")
         .single();
 
       if (error) {
-        console.error("Supabase insert error:", error);
-        throw new Error(error.message || "Database insert failed.");
+        throw new Error(error.message);
       }
 
       if (!data?.id) {
-        throw new Error("Story was not returned after insert.");
+        throw new Error("Story was not returned after save.");
       }
 
-      setFeedback("Story saved successfully. Redirecting...");
+      setFeedback("Story saved successfully.");
 
       setTimeout(() => {
         router.push("/admin/stories");
         router.refresh();
-      }, 500);
+      }, 400);
     } catch (error) {
-      console.error("Save story failed:", error);
       setFeedback(
         error instanceof Error ? error.message : "Unable to save story."
       );
@@ -319,9 +325,6 @@ export default function NewStoryPage() {
             className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
             placeholder="Leave blank if unsure"
           />
-          <p className="mt-2 text-xs text-slate-500">
-            Use the original source image URL, not a Google thumbnail link.
-          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
