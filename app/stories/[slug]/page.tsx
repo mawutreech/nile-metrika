@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -24,6 +25,8 @@ type StoryRow = {
   published_at: string | null;
   reading_time: number | null;
   author_id: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
 };
 
 type AuthorRow = {
@@ -34,6 +37,10 @@ type AuthorRow = {
   bio: string | null;
   avatar_url: string | null;
 };
+
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL || "https://nilemetrica.com";
+}
 
 function formatDate(dateString: string | null) {
   if (!dateString) return "";
@@ -66,28 +73,17 @@ function labelForStory(story: { section: string; category: string | null }) {
       return "States & Territories";
     case "data-statistics":
       return "Data & Statistics";
+    case "culture-sport":
+      return "Culture & Sport";
     default:
       return "Story";
   }
 }
 
-function getBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    "https://nilemetrica.com"
-  );
-}
-
-export default async function StoryPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+async function getPublishedStoryBySlug(slug: string) {
   const supabase = createSupabaseServerClient();
 
-  const { data: storyData, error: storyError } = await supabase
+  const { data, error } = await supabase
     .from("stories")
     .select(
       `
@@ -101,18 +97,84 @@ export default async function StoryPage({
       featured_image_url,
       published_at,
       reading_time,
-      author_id
+      author_id,
+      seo_title,
+      seo_description
     `
     )
     .eq("slug", slug)
     .eq("status", "published")
     .single();
 
-  if (storyError || !storyData) {
-    notFound();
+  if (error || !data) return null;
+  return data as StoryRow;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const story = await getPublishedStoryBySlug(slug);
+
+  if (!story) {
+    return {
+      title: "Story not found | Nile Metrica",
+      description: "The requested story could not be found.",
+      alternates: {
+        canonical: `${getBaseUrl()}/stories/${slug}`,
+      },
+    };
   }
 
-  const story = storyData as StoryRow;
+  const canonicalUrl = `${getBaseUrl()}/stories/${story.slug}`;
+  const title = story.seo_title?.trim() || story.title;
+  const description =
+    story.seo_description?.trim() ||
+    story.excerpt?.trim() ||
+    "Read analysis, commentary, and reporting from Nile Metrica.";
+
+  const imageUrl =
+    story.section === "opinion" ? undefined : story.featured_image_url || undefined;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: "Nile Metrica",
+      type: "article",
+      publishedTime: story.published_at || undefined,
+      images: imageUrl ? [{ url: imageUrl, alt: title }] : undefined,
+    },
+    twitter: {
+      card: imageUrl ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
+}
+
+export default async function StoryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const supabase = createSupabaseServerClient();
+
+  const story = await getPublishedStoryBySlug(slug);
+
+  if (!story) {
+    notFound();
+  }
 
   let author: AuthorRow | null = null;
 
@@ -127,10 +189,8 @@ export default async function StoryPage({
   }
 
   const storyLabel = labelForStory(story);
-  const authorName =
-    author?.display_name || author?.full_name || "Editor";
-  const authorRole =
-    author?.role || "Contributor at Nile Metrica";
+  const authorName = author?.display_name || author?.full_name || "Editor";
+  const authorRole = author?.role || "Contributor at Nile Metrica";
   const authorBio = author?.bio || "";
   const authorAvatar = author?.avatar_url || null;
   const publishedDate = formatDate(story.published_at);
