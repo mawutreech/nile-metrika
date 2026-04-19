@@ -31,6 +31,8 @@ export default function NewStoryPage() {
 
   const [authors, setAuthors] = useState<AuthorOption[]>([]);
   const [loadingAuthors, setLoadingAuthors] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState("");
 
   const [form, setForm] = useState({
     title: "",
@@ -46,24 +48,26 @@ export default function NewStoryPage() {
     author_id: "",
   });
 
-  const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState("");
-
   useEffect(() => {
     async function loadAuthors() {
+      setLoadingAuthors(true);
+      setFeedback("");
+
       const { data, error } = await supabase
         .from("authors")
         .select("id, display_name, full_name, role")
         .order("display_name", { ascending: true });
 
-      if (!error && data) {
-        setAuthors(data);
-        if (data.length > 0) {
-          setForm((current) => ({
-            ...current,
-            author_id: current.author_id || data[0].id,
-          }));
-        }
+      if (error) {
+        setFeedback(`Failed to load authors: ${error.message}`);
+      } else {
+        const authorRows = data ?? [];
+        setAuthors(authorRows);
+
+        setForm((current) => ({
+          ...current,
+          author_id: current.author_id || authorRows[0]?.id || "",
+        }));
       }
 
       setLoadingAuthors(false);
@@ -119,7 +123,7 @@ export default function NewStoryPage() {
         seo_title: form.seo_title.trim() || null,
         seo_description: form.seo_description.trim() || null,
         reading_time: readingTime,
-        author_id: form.author_id || null,
+        author_id: form.author_id.trim() || null,
         published_at: form.status === "published" ? new Date().toISOString() : null,
       };
 
@@ -129,12 +133,17 @@ export default function NewStoryPage() {
 
       const { error } = await supabase.from("stories").insert(payload);
 
-      if (error) throw error;
+      if (error) {
+        throw new Error(error.message);
+      }
 
+      setFeedback("Story saved successfully.");
       router.push("/admin/stories");
       router.refresh();
     } catch (error) {
-      setFeedback(error instanceof Error ? error.message : "Unable to save story.");
+      setFeedback(
+        error instanceof Error ? error.message : "Unable to save story."
+      );
     } finally {
       setSaving(false);
     }
@@ -221,6 +230,7 @@ export default function NewStoryPage() {
               value={form.category}
               onChange={handleChange}
               className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
+              placeholder="Optional"
             />
           </div>
 
@@ -251,7 +261,9 @@ export default function NewStoryPage() {
               disabled={loadingAuthors}
             >
               {authors.length === 0 ? (
-                <option value="">No authors found</option>
+                <option value="">
+                  {loadingAuthors ? "Loading authors..." : "No authors found"}
+                </option>
               ) : (
                 authors.map((author) => (
                   <option key={author.id} value={author.id}>
@@ -289,7 +301,11 @@ export default function NewStoryPage() {
             value={form.featured_image_url}
             onChange={handleChange}
             className="w-full border border-[#d8d8d8] px-4 py-3 outline-none"
+            placeholder="Leave blank if unsure"
           />
+          <p className="mt-2 text-xs text-slate-500">
+            Use the original source image URL, not a Google thumbnail link.
+          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
