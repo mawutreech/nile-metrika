@@ -125,7 +125,7 @@ function LeadOpinionCard({
   const meta = formatRelativeMeta(story.published_at, story.reading_time);
 
   return (
-    <article className="grid overflow-hidden border border-[#d8dce4] bg-[#eaf1f5] lg:grid-cols-[1.05fr_1.15fr]">
+    <article className="grid overflow-hidden border border-[#d8dce4] bg-[#eaf1f5] lg:grid-cols-[1.05fr_0.95fr]">
       <div className="flex flex-col justify-between p-8 md:p-10">
         <div>
           <p
@@ -135,7 +135,7 @@ function LeadOpinionCard({
           </p>
 
           <h2
-            className={`${headlineFont.className} mt-4 text-4xl leading-[0.96] text-[#111] md:text-5xl`}
+            className={`${headlineFont.className} mt-4 text-3xl leading-[0.97] text-[#111] md:text-4xl lg:text-5xl`}
           >
             <Link href={`/stories/${story.slug}`} className="hover:underline">
               {story.title}
@@ -192,7 +192,7 @@ function SecondaryOpinionCard({
   const meta = formatRelativeMeta(story.published_at, story.reading_time);
 
   return (
-    <article className="border border-[#d8dce4] bg-[#eaf1f5] p-6">
+    <article className="h-full border border-[#d8dce4] bg-[#eaf1f5] p-6">
       <p
         className={`${uiFont.className} inline-block bg-[#163a8a] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white`}
       >
@@ -200,7 +200,7 @@ function SecondaryOpinionCard({
       </p>
 
       <h3
-        className={`${headlineFont.className} mt-4 text-[2rem] leading-[1] text-[#111]`}
+        className={`${headlineFont.className} mt-4 text-[1.7rem] leading-[1.02] text-[#111]`}
       >
         <Link href={`/stories/${story.slug}`} className="hover:underline">
           {story.title}
@@ -254,40 +254,45 @@ export default async function OpinionPage() {
   const authorsById = await getAuthorsMap(authorIds);
 
   const leadStory = stories[0] ?? null;
-  const supportingStories = stories.slice(1, 5);
-  const remainingStories = stories.slice(5);
+  const topRightStory = stories[1] ?? null;
+  const lowerStories = stories.slice(2, 6);
+  const remainingStories = stories.slice(6);
 
   return (
     <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
       {stories.length > 0 ? (
         <section className="py-4">
-          <div className="space-y-1">
-            <p
-              className={`${uiFont.className} text-xs font-semibold uppercase tracking-[0.22em] text-[#3f5a5a]`}
-            >
-              Analysis and commentary
-            </p>
-            <h1 className={`${uiFont.className} text-4xl font-semibold text-[#202020]`}>
-              Opinion
-            </h1>
+          <div className="grid gap-1 lg:grid-cols-[1.7fr_1fr]">
+            <div>
+              {leadStory ? (
+                <LeadOpinionCard
+                  story={leadStory}
+                  author={
+                    leadStory.author_id
+                      ? authorsById.get(leadStory.author_id) ?? null
+                      : null
+                  }
+                />
+              ) : null}
+            </div>
+
+            <div>
+              {topRightStory ? (
+                <SecondaryOpinionCard
+                  story={topRightStory}
+                  author={
+                    topRightStory.author_id
+                      ? authorsById.get(topRightStory.author_id) ?? null
+                      : null
+                  }
+                />
+              ) : null}
+            </div>
           </div>
 
-          <div className="mt-8">
-            {leadStory ? (
-              <LeadOpinionCard
-                story={leadStory}
-                author={
-                  leadStory.author_id
-                    ? authorsById.get(leadStory.author_id) ?? null
-                    : null
-                }
-              />
-            ) : null}
-          </div>
-
-          {supportingStories.length > 0 ? (
+          {lowerStories.length > 0 ? (
             <div className="mt-1 grid gap-1 md:grid-cols-2 xl:grid-cols-4">
-              {supportingStories.map((story) => (
+              {lowerStories.map((story) => (
                 <SecondaryOpinionCard
                   key={story.id}
                   story={story}
@@ -315,16 +320,7 @@ export default async function OpinionPage() {
         </section>
       ) : (
         <section className="py-10">
-          <p
-            className={`${uiFont.className} text-xs font-semibold uppercase tracking-[0.22em] text-[#3f5a5a]`}
-          >
-            Analysis and commentary
-          </p>
-          <h1 className={`${uiFont.className} mt-2 text-4xl font-semibold text-[#202020]`}>
-            Opinion
-          </h1>
-
-          <div className="mt-8 border border-[#d8dce4] bg-[#eaf1f5] p-6 text-sm text-slate-600">
+          <div className="border border-[#d8dce4] bg-[#eaf1f5] p-6 text-sm text-slate-600">
             No opinion stories published yet.
           </div>
         </section>
