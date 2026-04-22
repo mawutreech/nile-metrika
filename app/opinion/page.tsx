@@ -90,7 +90,7 @@ async function getAuthorsMap(authorIds: string[]) {
 function AuthorAvatar({
   authorName,
   authorAvatar,
-  size = 52,
+  size = 44,
 }: {
   authorName: string;
   authorAvatar: string | null;
@@ -110,7 +110,7 @@ function AuthorAvatar({
   return (
     <div
       className="flex items-center justify-center rounded-full bg-[#d9e0e8] font-semibold text-[#203040]"
-      style={{ width: size, height: size, fontSize: Math.max(16, size * 0.34) }}
+      style={{ width: size, height: size, fontSize: Math.max(14, size * 0.34) }}
     >
       {authorName.charAt(0).toUpperCase()}
     </div>
@@ -120,24 +120,34 @@ function AuthorAvatar({
 function OpinionCard({
   story,
   author,
+  featured = false,
 }: {
   story: Story;
   author?: Author | null;
+  featured?: boolean;
 }) {
   const authorName = author?.display_name || author?.full_name || "Editor";
   const meta = formatRelativeMeta(story.published_at, story.reading_time);
 
   return (
-    <article className="flex h-full min-h-[430px] flex-col justify-between border border-[#d8dce4] bg-[#eaf1f5] p-7 md:p-8">
+    <article
+      className={`flex h-full flex-col justify-between border border-[#d8dce4] bg-[#eaf1f5] ${
+        featured ? "min-h-[360px] p-8 md:p-10" : "min-h-[300px] p-6"
+      }`}
+    >
       <div>
         <p
-          className={`${uiFont.className} inline-block bg-[#163a8a] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white`}
+          className={`${uiFont.className} inline-block bg-[#163a8a] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white`}
         >
           Opinion
         </p>
 
         <h2
-          className={`${headlineFont.className} mt-6 text-[2.2rem] leading-[0.94] tracking-[-0.02em] text-[#111] md:text-[2.5rem] xl:text-[2.8rem]`}
+          className={`${headlineFont.className} ${
+            featured
+              ? "mt-5 text-[2.6rem] leading-[0.95] tracking-[-0.02em] md:text-[3.1rem]"
+              : "mt-4 text-[2rem] leading-[0.98] tracking-[-0.015em] md:text-[2.2rem]"
+          } text-[#111]`}
         >
           <Link
             href={`/stories/${story.slug}`}
@@ -148,15 +158,15 @@ function OpinionCard({
         </h2>
       </div>
 
-      <div className="mt-8 flex items-center gap-4">
+      <div className={`${featured ? "mt-8" : "mt-6"} flex items-center gap-3`}>
         <AuthorAvatar
           authorName={authorName}
           authorAvatar={author?.avatar_url || null}
-          size={50}
+          size={featured ? 48 : 42}
         />
 
         <div className={uiFont.className}>
-          <p className="text-sm font-bold uppercase tracking-[0.08em] text-[#1b1b1b]">
+          <p className="text-[13px] font-bold uppercase tracking-[0.07em] text-[#1b1b1b]">
             By {authorName}
           </p>
           <p className="mt-1 text-xs text-[#5e6670]">{meta}</p>
@@ -170,7 +180,7 @@ function EmptyOpinionCard() {
   return (
     <div
       aria-hidden="true"
-      className="min-h-[430px] border border-[#d8dce4] bg-[#ffffff]"
+      className="min-h-[300px] border border-[#d8dce4] bg-white"
     />
   );
 }
@@ -203,27 +213,49 @@ export default async function OpinionPage() {
 
   const authorsById = await getAuthorsMap(authorIds);
 
-  const remainder = stories.length % 3;
-  const emptySlots = stories.length > 0 && remainder !== 0 ? 3 - remainder : 0;
+  const featuredStory = stories[0] ?? null;
+  const remainingStories = stories.slice(1);
+
+  const remainder = remainingStories.length % 3;
+  const emptySlots =
+    remainingStories.length > 0 && remainder !== 0 ? 3 - remainder : 0;
 
   return (
     <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
       <section className="py-4">
         {stories.length > 0 ? (
-          <div className="grid gap-1 md:grid-cols-2 xl:grid-cols-3">
-            {stories.map((story) => (
+          <div className="space-y-1">
+            {featuredStory ? (
               <OpinionCard
-                key={story.id}
-                story={story}
+                story={featuredStory}
+                featured
                 author={
-                  story.author_id ? authorsById.get(story.author_id) ?? null : null
+                  featuredStory.author_id
+                    ? authorsById.get(featuredStory.author_id) ?? null
+                    : null
                 }
               />
-            ))}
+            ) : null}
 
-            {Array.from({ length: emptySlots }).map((_, index) => (
-              <EmptyOpinionCard key={`empty-${index}`} />
-            ))}
+            {remainingStories.length > 0 ? (
+              <div className="grid gap-1 md:grid-cols-2 xl:grid-cols-3">
+                {remainingStories.map((story) => (
+                  <OpinionCard
+                    key={story.id}
+                    story={story}
+                    author={
+                      story.author_id
+                        ? authorsById.get(story.author_id) ?? null
+                        : null
+                    }
+                  />
+                ))}
+
+                {Array.from({ length: emptySlots }).map((_, index) => (
+                  <EmptyOpinionCard key={`empty-${index}`} />
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="border border-[#d8dce4] bg-[#eaf1f5] p-6 text-sm text-slate-600">
