@@ -110,6 +110,20 @@ async function getPublishedStoryBySlug(slug: string) {
   return data as StoryRow;
 }
 
+async function getAuthorById(authorId: string | null) {
+  if (!authorId) return null;
+
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("authors")
+    .select("id, display_name, full_name, role, bio, avatar_url")
+    .eq("id", authorId)
+    .single();
+
+  return (data as AuthorRow | null) ?? null;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -128,6 +142,8 @@ export async function generateMetadata({
     };
   }
 
+  const author = await getAuthorById(story.author_id);
+
   const canonicalUrl = `${getBaseUrl()}/stories/${story.slug}`;
   const title = story.seo_title?.trim() || story.title;
   const description =
@@ -135,8 +151,10 @@ export async function generateMetadata({
     story.excerpt?.trim() ||
     "Read analysis, commentary, and reporting from Nile Metrica.";
 
-  const imageUrl =
-    story.section === "opinion" ? undefined : story.featured_image_url || undefined;
+  const socialImage =
+    story.featured_image_url ||
+    author?.avatar_url ||
+    `${getBaseUrl()}/logo.png`;
 
   return {
     title,
@@ -151,13 +169,20 @@ export async function generateMetadata({
       siteName: "Nile Metrica",
       type: "article",
       publishedTime: story.published_at || undefined,
-      images: imageUrl ? [{ url: imageUrl, alt: title }] : undefined,
+      images: socialImage
+        ? [
+            {
+              url: socialImage,
+              alt: title,
+            },
+          ]
+        : undefined,
     },
     twitter: {
-      card: imageUrl ? "summary_large_image" : "summary",
+      card: socialImage ? "summary_large_image" : "summary",
       title,
       description,
-      images: imageUrl ? [imageUrl] : undefined,
+      images: socialImage ? [socialImage] : undefined,
     },
   };
 }
@@ -168,25 +193,13 @@ export default async function StoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = createSupabaseServerClient();
-
   const story = await getPublishedStoryBySlug(slug);
 
   if (!story) {
     notFound();
   }
 
-  let author: AuthorRow | null = null;
-
-  if (story.author_id) {
-    const { data: authorData } = await supabase
-      .from("authors")
-      .select("id, display_name, full_name, role, bio, avatar_url")
-      .eq("id", story.author_id)
-      .single();
-
-    author = (authorData as AuthorRow | null) ?? null;
-  }
+  const author = await getAuthorById(story.author_id);
 
   const storyLabel = labelForStory(story);
   const authorName = author?.display_name || author?.full_name || "Editor";
@@ -270,7 +283,7 @@ export default async function StoryPage({
 
         {story.excerpt ? (
           <p
-            className="mt-10 text-[1.22rem] leading-9 text-[#333]"
+            className="mt-10 text-lg leading-9 text-[#222]"
             style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
           >
             {story.excerpt}
