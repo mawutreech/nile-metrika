@@ -1,21 +1,29 @@
 import Link from "next/link";
-import Image from "next/image";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Playfair_Display, Inter } from "next/font/google";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const headlineFont = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
+const uiFont = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 type Story = {
   id: string;
   title: string;
   slug: string;
-  excerpt: string | null;
-  featured_image_url: string | null;
   published_at: string | null;
   reading_time: number | null;
-  section: string;
-  category: string | null;
   author_id: string | null;
+  status: string | null;
+  section: string | null;
 };
 
 type Author = {
@@ -26,13 +34,38 @@ type Author = {
   avatar_url: string | null;
 };
 
-function formatDate(dateString: string | null) {
-  if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+function formatRelativeMeta(
+  dateString: string | null,
+  readingTime: number | null
+) {
+  const read = readingTime ? `${readingTime} min read` : "";
+
+  if (!dateString) return read;
+
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+  let label = "";
+
+  if (diffHours < 24) {
+    label = `${Math.max(1, diffHours)} hours ago`;
+  } else {
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays === 1) {
+      label = "Yesterday";
+    } else {
+      label = date.toLocaleDateString("en-AU", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    }
+  }
+
+  return read ? `${label} · ${read}` : label;
 }
 
 async function getAuthorsMap(authorIds: string[]) {
@@ -54,88 +87,101 @@ async function getAuthorsMap(authorIds: string[]) {
   return map;
 }
 
+function AuthorAvatar({
+  authorName,
+  authorAvatar,
+  size = 44,
+}: {
+  authorName: string;
+  authorAvatar: string | null;
+  size?: number;
+}) {
+  if (authorAvatar) {
+    return (
+      <img
+        src={authorAvatar}
+        alt={authorName}
+        className="rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="flex items-center justify-center rounded-full bg-[#d9e0e8] font-semibold text-[#203040]"
+      style={{ width: size, height: size, fontSize: Math.max(14, size * 0.34) }}
+    >
+      {authorName.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
 function OpinionCard({
   story,
   author,
+  featured = false,
 }: {
   story: Story;
   author?: Author | null;
+  featured?: boolean;
 }) {
   const authorName = author?.display_name || author?.full_name || "Editor";
-  const authorRole = author?.role || "Contributor at Nile Metrica";
-  const authorAvatar = author?.avatar_url || null;
+  const meta = formatRelativeMeta(story.published_at, story.reading_time);
 
   return (
-    <article className="overflow-hidden border border-[#d8d8d8] bg-white">
-      {story.featured_image_url ? (
-        <Link href={`/stories/${story.slug}`} className="block">
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#f2f2f2]">
-            <Image
-              src={story.featured_image_url}
-              alt={story.title}
-              fill
-              className="object-cover transition duration-300 hover:scale-[1.02]"
-              unoptimized
-            />
-          </div>
-        </Link>
-      ) : (
-        <div className="flex min-h-[148px] items-center bg-[#eef3f6] px-5 py-4">
-          <div className="flex items-center gap-3">
-            {authorAvatar ? (
-              <img
-                src={authorAvatar}
-                alt={authorName}
-                className="h-12 w-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#d7dfe5] text-lg font-semibold text-[#223]">
-                {authorName.charAt(0).toUpperCase()}
-              </div>
-            )}
-
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#3f5a5a]">
-                By {authorName}
-              </p>
-              <p className="mt-1 text-sm text-slate-600">{authorRole}</p>
-              {(story.published_at || story.reading_time) && (
-                <p className="mt-1 text-xs text-slate-500">
-                  {story.published_at ? formatDate(story.published_at) : ""}
-                  {story.published_at && story.reading_time ? " · " : ""}
-                  {story.reading_time ? `${story.reading_time} min read` : ""}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="p-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#3f7f68]">
-          {story.category?.trim() || "Opinion"}
+    <article
+      className={`flex h-full flex-col justify-between border border-[#d8dce4] bg-[#eaf1f5] ${
+        featured ? "min-h-[360px] p-8 md:p-10" : "min-h-[300px] p-6"
+      }`}
+    >
+      <div>
+        <p
+          className={`${uiFont.className} inline-block bg-[#163a8a] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white`}
+        >
+          Opinion
         </p>
 
-        <h2 className="mt-3 text-[2rem] font-semibold leading-[1.08] tracking-tight text-[#2f2f2f]">
-          <Link href={`/stories/${story.slug}`} className="hover:underline">
+        <h2
+          className={`${headlineFont.className} ${
+            featured
+              ? "mt-5 text-[2.6rem] leading-[0.95] tracking-[-0.02em] md:text-[3.1rem]"
+              : "mt-4 text-[2rem] leading-[0.98] tracking-[-0.015em] md:text-[2.2rem]"
+          } text-[#111]`}
+        >
+          <Link
+            href={`/stories/${story.slug}`}
+            className="no-underline hover:underline"
+          >
             {story.title}
           </Link>
         </h2>
+      </div>
 
-        {story.excerpt ? (
-          <p className="mt-3 line-clamp-5 text-sm leading-7 text-[#555]">
-            {story.excerpt}
+      <div className={`${featured ? "mt-8" : "mt-6"} flex items-center gap-3`}>
+        <AuthorAvatar
+          authorName={authorName}
+          authorAvatar={author?.avatar_url || null}
+          size={featured ? 48 : 42}
+        />
+
+        <div className={uiFont.className}>
+          <p className="text-[13px] font-bold uppercase tracking-[0.07em] text-[#1b1b1b]">
+            By {authorName}
           </p>
-        ) : null}
-
-        <Link
-          href={`/stories/${story.slug}`}
-          className="mt-4 inline-block text-sm font-medium text-[#0f3f75] hover:underline"
-        >
-          Read more
-        </Link>
+          <p className="mt-1 text-xs text-[#5e6670]">{meta}</p>
+        </div>
       </div>
     </article>
+  );
+}
+
+function EmptyOpinionCard() {
+  return (
+    <div
+      aria-hidden="true"
+      className="min-h-[300px] border border-[#d8dce4] bg-white"
+    />
   );
 }
 
@@ -148,61 +194,75 @@ export default async function OpinionPage() {
       id,
       title,
       slug,
-      excerpt,
-      featured_image_url,
       published_at,
       reading_time,
-      section,
-      category,
-      author_id
+      author_id,
+      status,
+      section
     `)
     .eq("status", "published")
     .eq("section", "opinion")
-    .order("published_at", { ascending: false });
+    .order("published_at", { ascending: false })
+    .limit(60);
 
   const stories: Story[] = (data as Story[]) ?? [];
 
   const authorIds = Array.from(
-    new Set(stories.map((s) => s.author_id).filter(Boolean) as string[])
+    new Set(stories.map((story) => story.author_id).filter(Boolean) as string[])
   );
 
   const authorsById = await getAuthorsMap(authorIds);
 
+  const featuredStory = stories[0] ?? null;
+  const remainingStories = stories.slice(1);
+
+  const remainder = remainingStories.length % 3;
+  const emptySlots =
+    remainingStories.length > 0 && remainder !== 0 ? 3 - remainder : 0;
+
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
-      {stories.length > 0 ? (
-        <section className="py-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f7f68]">
-            Analysis and commentary
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-[#2f2f2f]">
-            Opinion
-          </h1>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {stories.map((story) => (
+    <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+      <section className="py-4">
+        {stories.length > 0 ? (
+          <div className="space-y-1">
+            {featuredStory ? (
               <OpinionCard
-                key={story.id}
-                story={story}
-                author={story.author_id ? authorsById.get(story.author_id) ?? null : null}
+                story={featuredStory}
+                featured
+                author={
+                  featuredStory.author_id
+                    ? authorsById.get(featuredStory.author_id) ?? null
+                    : null
+                }
               />
-            ))}
-          </div>
-        </section>
-      ) : (
-        <section className="py-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f7f68]">
-            Analysis and commentary
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold text-[#2f2f2f]">
-            Opinion
-          </h1>
+            ) : null}
 
-          <div className="mt-8 border border-[#d8d8d8] bg-white p-5 text-sm text-slate-600">
+            {remainingStories.length > 0 ? (
+              <div className="grid gap-1 md:grid-cols-2 xl:grid-cols-3">
+                {remainingStories.map((story) => (
+                  <OpinionCard
+                    key={story.id}
+                    story={story}
+                    author={
+                      story.author_id
+                        ? authorsById.get(story.author_id) ?? null
+                        : null
+                    }
+                  />
+                ))}
+
+                {Array.from({ length: emptySlots }).map((_, index) => (
+                  <EmptyOpinionCard key={`empty-${index}`} />
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="border border-[#d8dce4] bg-[#eaf1f5] p-6 text-sm text-slate-600">
             No opinion stories published yet.
           </div>
-        </section>
-      )}
+        )}
+      </section>
     </main>
   );
 }

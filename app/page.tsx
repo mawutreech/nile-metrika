@@ -1,9 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Playfair_Display, Inter } from "next/font/google";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const headlineFont = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+});
+
+const uiFont = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
 
 type Story = {
   id: string;
@@ -83,25 +94,61 @@ async function getAuthorsMap(authorIds: string[]) {
   return map;
 }
 
+function AuthorAvatar({
+  authorName,
+  authorAvatar,
+  size = 42,
+}: {
+  authorName: string;
+  authorAvatar: string | null;
+  size?: number;
+}) {
+  if (authorAvatar) {
+    return (
+      <img
+        src={authorAvatar}
+        alt={authorName}
+        className="rounded-full object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="flex items-center justify-center rounded-full bg-[#d7dfe5] font-semibold text-[#223]"
+      style={{ width: size, height: size, fontSize: Math.max(14, size * 0.34) }}
+    >
+      {authorName.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
 function StoryCard({
   story,
   author,
+  featured = false,
 }: {
   story: Story;
   author?: Author | null;
+  featured?: boolean;
 }) {
   const authorName = author?.display_name || author?.full_name || "Editor";
   const authorRole = author?.role || "Contributor at Nile Metrica";
   const authorAvatar = author?.avatar_url || null;
 
-  const showAuthorFallback =
+  const showOpinionAuthorPanel =
     story.section === "opinion" && !story.featured_image_url;
 
   return (
     <article className="overflow-hidden border border-[#d8d8d8] bg-white">
       {story.featured_image_url ? (
         <Link href={`/stories/${story.slug}`} className="block">
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#f2f2f2]">
+          <div
+            className={`relative w-full overflow-hidden bg-[#f2f2f2] ${
+              featured ? "aspect-[16/9]" : "aspect-[16/10]"
+            }`}
+          >
             <Image
               src={story.featured_image_url}
               alt={story.title}
@@ -111,28 +158,30 @@ function StoryCard({
             />
           </div>
         </Link>
-      ) : showAuthorFallback ? (
-        <div className="flex min-h-[148px] items-center bg-[#eef3f6] px-5 py-4">
+      ) : showOpinionAuthorPanel ? (
+        <div
+          className={`flex items-center bg-[#eef3f6] ${
+            featured ? "min-h-[132px] px-5 py-4" : "min-h-[120px] px-5 py-4"
+          }`}
+        >
           <div className="flex items-center gap-3">
-            {authorAvatar ? (
-              <img
-                src={authorAvatar}
-                alt={authorName}
-                className="h-12 w-12 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#d7dfe5] text-lg font-semibold text-[#223]">
-                {authorName.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <AuthorAvatar
+              authorName={authorName}
+              authorAvatar={authorAvatar}
+              size={featured ? 46 : 40}
+            />
 
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#3f5a5a]">
+              <p
+                className={`${uiFont.className} text-[11px] font-semibold uppercase tracking-[0.16em] text-[#3f5a5a]`}
+              >
                 By {authorName}
               </p>
-              <p className="mt-1 text-sm text-slate-600">{authorRole}</p>
+              <p className={`${uiFont.className} mt-1 text-sm text-slate-600`}>
+                {authorRole}
+              </p>
               {(story.published_at || story.reading_time) && (
-                <p className="mt-1 text-xs text-slate-500">
+                <p className={`${uiFont.className} mt-1 text-xs text-slate-500`}>
                   {story.published_at ? formatDate(story.published_at) : ""}
                   {story.published_at && story.reading_time ? " · " : ""}
                   {story.reading_time ? `${story.reading_time} min read` : ""}
@@ -142,31 +191,43 @@ function StoryCard({
           </div>
         </div>
       ) : (
-        <div className="flex min-h-[180px] items-center justify-center bg-[#f3f3f3] text-sm text-slate-500">
-          No image available
+        <div className="flex min-h-[160px] items-center justify-center bg-[#f5f5f5] text-sm text-slate-500">
+          {labelForStory(story)}
         </div>
       )}
 
-      <div className="p-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#3f7f68]">
+      <div className={featured ? "p-6" : "p-5"}>
+        <p
+          className={`${uiFont.className} text-[11px] font-semibold uppercase tracking-[0.16em] text-[#3f7f68]`}
+        >
           {labelForStory(story)}
         </p>
 
-        <h2 className="mt-3 text-[2rem] font-semibold leading-[1.08] tracking-tight text-[#2f2f2f]">
+        <h2
+          className={`${headlineFont.className} mt-3 text-[#222] ${
+            featured
+              ? "text-[2.25rem] leading-[0.98] md:text-[2.7rem]"
+              : "text-[1.85rem] leading-[1.02]"
+          }`}
+        >
           <Link href={`/stories/${story.slug}`} className="hover:underline">
             {story.title}
           </Link>
         </h2>
 
         {story.excerpt ? (
-          <p className="mt-3 line-clamp-5 text-sm leading-7 text-[#555]">
+          <p
+            className={`${uiFont.className} mt-3 text-[15px] leading-7 text-[#555] ${
+              featured ? "line-clamp-4" : "line-clamp-5"
+            }`}
+          >
             {story.excerpt}
           </p>
         ) : null}
 
         <Link
           href={`/stories/${story.slug}`}
-          className="mt-4 inline-block text-sm font-medium text-[#0f3f75] hover:underline"
+          className={`${uiFont.className} mt-4 inline-block text-sm font-medium text-[#0f3f75] hover:underline`}
         >
           Read more
         </Link>
@@ -181,15 +242,17 @@ function CompactStoryLink({ story }: { story: Story }) {
       href={`/stories/${story.slug}`}
       className="block border-b border-[#dcdcdc] py-5 last:border-b-0 hover:bg-[#fafafa]"
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#3f7f68]">
+      <p
+        className={`${uiFont.className} text-[11px] font-semibold uppercase tracking-[0.16em] text-[#3f7f68]`}
+      >
         {labelForStory(story)}
       </p>
 
-      <h3 className="mt-2 text-xl font-semibold leading-tight text-[#2f2f2f]">
+      <h3 className={`${headlineFont.className} mt-2 text-[1.55rem] leading-[1.02] text-[#222]`}>
         {story.title}
       </h3>
 
-      <p className="mt-2 text-sm text-slate-500">
+      <p className={`${uiFont.className} mt-2 text-sm text-slate-500`}>
         {story.published_at ? formatDate(story.published_at) : ""}
         {story.published_at && story.reading_time ? " · " : ""}
         {story.reading_time ? `${story.reading_time} min read` : ""}
@@ -213,12 +276,16 @@ function SectionBlock({
 
   return (
     <section className="border-b border-[#dcdcdc] py-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f7f68]">
+      <p
+        className={`${uiFont.className} text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3f7f68]`}
+      >
         {subtitle}
       </p>
-      <h2 className="mt-2 text-3xl font-semibold text-[#2f2f2f]">{title}</h2>
+      <h2 className={`${uiFont.className} mt-2 text-3xl font-semibold text-[#2f2f2f]`}>
+        {title}
+      </h2>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {stories.map((story) => (
           <StoryCard
             key={story.id}
@@ -298,10 +365,11 @@ export default async function HomePage() {
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10">
       {latestStories.length > 0 ? (
         <section className="border-b border-[#dcdcdc] py-10">
-          <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="grid gap-8 lg:grid-cols-[1.18fr_0.82fr]">
             <div>
               <StoryCard
                 story={latestStories[0]}
+                featured
                 author={
                   latestStories[0].author_id
                     ? authorsById.get(latestStories[0].author_id) ?? null
