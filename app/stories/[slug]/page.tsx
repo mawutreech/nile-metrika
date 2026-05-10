@@ -142,19 +142,12 @@ export async function generateMetadata({
     };
   }
 
-  const author = await getAuthorById(story.author_id);
-
   const canonicalUrl = `${getBaseUrl()}/stories/${story.slug}`;
   const title = story.seo_title?.trim() || story.title;
   const description =
     story.seo_description?.trim() ||
     story.excerpt?.trim() ||
     "Read analysis, commentary, and reporting from Nile Metrica.";
-
-  const socialImage =
-    story.featured_image_url ||
-    author?.avatar_url ||
-    `${getBaseUrl()}/logo.png`;
 
   return {
     title,
@@ -169,20 +162,20 @@ export async function generateMetadata({
       siteName: "Nile Metrica",
       type: "article",
       publishedTime: story.published_at || undefined,
-      images: socialImage
+      images: story.featured_image_url
         ? [
             {
-              url: socialImage,
+              url: story.featured_image_url,
               alt: title,
             },
           ]
         : undefined,
     },
     twitter: {
-      card: socialImage ? "summary_large_image" : "summary",
+      card: story.featured_image_url ? "summary_large_image" : "summary",
       title,
       description,
-      images: socialImage ? [socialImage] : undefined,
+      images: story.featured_image_url ? [story.featured_image_url] : undefined,
     },
   };
 }
@@ -228,6 +221,12 @@ export default async function StoryPage({
   const mailShareUrl = `mailto:?subject=${encodeURIComponent(
     story.title
   )}&body=${encodeURIComponent(`${shareText}\n\n${storyUrl}`)}`;
+
+  const articleTextStyle = {
+    fontFamily: "Georgia, 'Times New Roman', serif",
+    fontSize: "1.125rem",
+    lineHeight: "2.25rem",
+  } as const;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -282,10 +281,7 @@ export default async function StoryPage({
         </div>
 
         {story.excerpt ? (
-          <p
-            className="mt-10 text-lg leading-9 text-[#222]"
-            style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-          >
+          <p className="mt-10 text-[#222]" style={articleTextStyle}>
             {story.excerpt}
           </p>
         ) : null}
@@ -305,8 +301,8 @@ export default async function StoryPage({
         ) : null}
 
         <div
-          className="prose prose-lg mt-12 max-w-none text-[#222] prose-headings:text-[#111] prose-a:text-[#0f3f75]"
-          style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+          className="prose mt-12 max-w-none text-[#222] prose-headings:text-[#111] prose-a:text-[#0f3f75]"
+          style={articleTextStyle}
           dangerouslySetInnerHTML={{ __html: story.body_html }}
         />
 
