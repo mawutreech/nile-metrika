@@ -1,9 +1,9 @@
-import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import ArticleShareButtons from "@/components/site/ArticleShareButtons";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -204,23 +204,6 @@ export default async function StoryPage({
   const isOpinion = story.section === "opinion";
 
   const storyUrl = `${getBaseUrl()}/stories/${story.slug}`;
-  const shareText = `${story.title} — Nile Metrica`;
-
-  const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    shareText
-  )}&url=${encodeURIComponent(storyUrl)}`;
-
-  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-    storyUrl
-  )}`;
-
-  const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-    storyUrl
-  )}`;
-
-  const mailShareUrl = `mailto:?subject=${encodeURIComponent(
-    story.title
-  )}&body=${encodeURIComponent(`${shareText}\n\n${storyUrl}`)}`;
 
   const articleTextStyle = {
     fontFamily: "Georgia, 'Times New Roman', serif",
@@ -306,47 +289,7 @@ export default async function StoryPage({
           dangerouslySetInnerHTML={{ __html: story.body_html }}
         />
 
-        <div className="mt-14 border-t border-[#e5e5e5] pt-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#3f5a5a]">
-            Share this article
-          </p>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link
-              href={xShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
-            >
-              Share on X
-            </Link>
-
-            <Link
-              href={facebookShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
-            >
-              Share on Facebook
-            </Link>
-
-            <Link
-              href={linkedinShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
-            >
-              Share on LinkedIn
-            </Link>
-
-            <Link
-              href={mailShareUrl}
-              className="inline-flex items-center border border-[#d8d8d8] px-4 py-2 text-sm font-medium text-[#1f1f1f] transition hover:bg-[#f7f7f7]"
-            >
-              Share by Email
-            </Link>
-          </div>
-        </div>
+        <ArticleShareButtons storyUrl={storyUrl} storyTitle={story.title} />
       </article>
     </main>
   );
